@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  CANCELED
+}
+
+enum LoginMethod {
+  GOOGLE
+  MICROSOFT
+  CREDENTIALS
+}
+
+enum SubuserPermission {
+  ADMINISTRATOR
+  USER
+}
+
+enum Plan {
+  FLASH
+  CREATOR
+  INFLUENCER
+  VIRAL
+}
+
+model User {
+  id          String      @id @default(uuid())
+  name        String
+  email       String      @unique
+  password    String
+  loginMethod LoginMethod @map("login_method")
+  authToken   String?     @map("auth_token")
+  avatarUrl   String      @default("") @map("avatar_url")
+
+  enterprises Enterprise[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updateAt  DateTime @updatedAt @map("update_at")
+  lastLogin DateTime @default(now()) @map("last_login")
+
+  @@map("users")
+}
+
+model ReedemPassword {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  code      String
+  expireAt  DateTime @map("expire_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("reedem_passwords")
+}
+
+model Enterprise {
+  id String @id @default(uuid())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @map("user_id")
+
+  name        String
+  colors      String   @default("Roxo e azul")
+  font        String   @default("inter")
+  language    String   @default("pt")
+  keywords    String[]
+  infos       String   @db.Text
+  personality String   @db.Text
+  plan        Plan
+  metrics     String   @default("{}") @map("metrics") @db.Text //JSON STRING
+
+  posts    Post[]
+  logs     Log[]
+  subusers Subuser[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updateAt  DateTime @updatedAt @map("update_at")
+  expireAt  DateTime @map("expire_at")
+
+  @@map("enterprises")
+}
+
+model Log {
+  id       String @id @default(uuid())
+  title    String
+  userName String @map("user_name")
+  userId   String @map("user_id")
+  tag      String
+
+  enterprise   Enterprise? @relation(fields: [enterpriseId], references: [id])
+  enterpriseId String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("logs")
+}
+
+model Subuser {
+  id         String            @id @default(uuid())
+  userId     String            @map("user_id")
+  email      String
+  permission SubuserPermission
+
+  enterprise   Enterprise @relation(fields: [enterpriseId], references: [id])
+  enterpriseId String     @map("enterprise_id")
+}
+
+model Post {
+  id String @id @default(uuid())
+
+  enterprise   Enterprise @relation(fields: [enterpriseId], references: [id])
+  enterpriseId String     @map("enterprise_id")
+
+  title              String
+  promptSent         String  @map("body_send")
+  artModel           String  @map("art_model")
+  type               String
+  instructions       String  @default("{}") @db.Text //JSON STRING
+  responseBody       String? @map("response_body")
+  responseAttachment String? @map("response_attachment")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updateAt  DateTime @updatedAt @map("update_at")
+
+  @@map("posts")
+}
+
+model Invoice {
+  id             String        @id @default(uuid())
+  publicId       Int           @unique @default(autoincrement())
+  enterpriseId   String        @map("enterprise_id")
+  enterpriseName String        @map("enterprise_name")
+  status         InvoiceStatus
+  value          Int
+  discount       Int           @default(0)
+
+  paidAt     DateTime? @map("paid_at")
+  paidWith   String?   @map("paid_with")
+  paidValue  Int?      @map("paid_value")
+  paidCoupon String?   @map("paid_coupon")
+  paidBy     String?   @map("paid_by")
+
+  expireAt  DateTime @map("expire_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("invoices")
+}
+
+model Upload {
+  id             String @id @default(uuid())
+  fileName       String @map("file_name")
+  userId         String @map("user_id")
+  originalName   String @map("original_name")
+  mimeType       String @map("mime_type")
+  uses           Int    @default(0)
+  size           Int
+  storedLocation String @map("stored_location")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("uploads")
+}
