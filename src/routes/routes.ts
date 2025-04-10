@@ -11,7 +11,7 @@ function registerRoutes(app: Express) {
     console.info(`Rota "/api${route.path}" montada com sucesso!`);
   });
 
-  console.info("ROtas montadas com sucesso!");
+  console.info("Rotas montadas com sucesso!");
 }
 
 export default registerRoutes;
