@@ -5,6 +5,7 @@ import zodpressets from "@/utils/zodpressets";
 import { Router } from "express";
 import { z } from "zod";
 import { v4 as uuid } from "uuid";
+import createMailer from "@/emails/email";
 
 const userRoute = Router();
 
@@ -34,7 +35,14 @@ userRoute.post("/create", zodschema(userCreateSchema), async (req, res) => {
       await prisma.user.delete({ where: { id: userExists.id } });
     }
 
-    //TODO: Enviar e-mail de verificação
+    const mailer = createMailer();
+
+    const template = await mailer.template("verification.hbs", {
+      name: req.body.name,
+      code: randomCode,
+    });
+
+    await mailer.send("account", req.body.email, "Verifique seu e-mail", template, true);
 
     await prisma.user.create({
       data: {
