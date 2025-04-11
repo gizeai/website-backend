@@ -38,11 +38,11 @@ model User {
   email            String      @unique
   password         String
   loginMethod      LoginMethod @map("login_method")
-  authToken        String?     @map("auth_token")
   avatarUrl        String      @default("") @map("avatar_url")
   verificationCode String      @map("verification_code")
 
   enterprises Enterprise[]
+  sessions    Session[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updateAt  DateTime @updatedAt @map("update_at")
@@ -50,6 +50,20 @@ model User {
 
   @@unique([signUpId, email])
   @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  token     String
+  ipAddress String   @map("ip_address")
+  expireAt  DateTime @map("expire_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  signature String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @map("user_id")
+
+  @@map("sessions")
 }
 
 model ReedemPassword {

@@ -1,4 +1,3 @@
-import JsonWebToken from "@/managers/JsonWebToken";
 import prisma from "@/utils/prisma";
 import passport from "passport";
 // import { OIDCStrategy } from "passport-azure-ad";
@@ -41,13 +40,7 @@ passport.use(
           });
         }
 
-        const authToken = JsonWebToken.signUser({
-          name: user.name,
-          email: user.email,
-          id: user.id,
-        });
-
-        return done(null, { ...user, authToken });
+        return done(null, { ...user });
       } catch (err) {
         return done(err, false);
       }
@@ -55,7 +48,7 @@ passport.use(
   )
 );
 
-//TODO: Habilitar o login com a Microsoft depois.
+// TODO: Habilitar o login com a Microsoft depois.
 // passport.use(
 //   new OIDCStrategy(
 //     {
@@ -92,13 +85,7 @@ passport.use(
 //           });
 //         }
 
-//         const authToken = JsonWebToken.signUser({
-//           name: user.name,
-//           email: user.email,
-//           id: user.id,
-//         });
-
-//         return done(null, { ...user, authToken });
+//         return done(null, { ...user });
 //       } catch (err) {
 //         return done(err, false);
 //       }

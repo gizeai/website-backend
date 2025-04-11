@@ -36,6 +36,7 @@
     "passport": "^0.7.0",
     "passport-azure-ad": "^4.3.5",
     "passport-google-oauth20": "^2.0.0",
+    "request-ip": "^3.3.0",
     "tsconfig-paths": "^4.2.0",
     "uuid": "^11.1.0",
     "zod": "^3.24.2"
@@ -53,6 +54,7 @@
     "@types/passport": "^1.0.17",
     "@types/passport-azure-ad": "^4.3.6",
     "@types/passport-google-oauth20": "^2.0.16",
+    "@types/request-ip": "^0.0.41",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "@typescript-eslint/parser": "^8.29.1",

@@ -16,5 +16,7 @@ export const translation = {
     user_not_found: "Usuário não encontrado",
     invalid_code: "Código de verificação inválido",
     already_verified: "Usuário já verificado",
+    not_verified: "Usuário ainda não foi verificado",
+    invalid_password: "Sua senha é inválida",
   },
 } as const;

@@ -1,15 +1,13 @@
 import i18next from "i18next";
-import Backend from "i18next-fs-backend";
 import middleware from "i18next-http-middleware";
 
-i18next
-  .use(Backend)
-  .use(middleware.LanguageDetector)
-  .init({
-    fallbackLng: "pt",
-    backend: {
-      loadPath: "./src/locales/{{lng}}.ts",
-    },
-  });
+import { translation as translationPT } from "@/locales/pt";
+
+i18next.use(middleware.LanguageDetector).init({
+  fallbackLng: "pt",
+  resources: {
+    pt: { translation: translationPT },
+  },
+});
 
 export default i18next;

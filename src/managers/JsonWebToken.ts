@@ -8,7 +8,7 @@ if (!jwt_secret) {
 
 export default class JsonWebToken {
   public static signUser(data: { [key: string]: unknown }): string {
-    const token = jwt.sign(data, jwt_secret, { expiresIn: "30d" });
+    const token = jwt.sign(data, jwt_secret, { expiresIn: "90d" });
     return token;
   }
 
