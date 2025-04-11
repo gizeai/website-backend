@@ -11,4 +11,4 @@ tsConfigPaths.register({
   paths: config.compilerOptions.paths,
 });
 
-require("./dist/server.js");
+require("./dist/src/server.js");
