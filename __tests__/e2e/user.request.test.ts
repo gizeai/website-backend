@@ -1,4 +1,9 @@
-import axiosBase from "../utils/axiosBase";
+import axios from "axios";
+
+const axiosBase = axios.create({
+  baseURL: "http://localhost:3000/api",
+  validateStatus: () => true,
+});
 
 describe("POST /user/create", () => {
   it("should return 200 for valid name", async () => {
@@ -78,6 +83,7 @@ describe("GET /user/auth", () => {
     expect(typeof data.createdAt).toBe("string");
     expect(typeof data.updateAt).toBe("string");
     expect(typeof data.lastLogin).toBe("string");
+    expect(Array.isArray(data.enterprises)).toBe(true);
   });
 
   it("should return 401", async () => {

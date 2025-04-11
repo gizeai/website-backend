@@ -216,6 +216,31 @@ const UserService = {
       data: user,
     };
   },
+
+  enterprises: async (userId: string) => {
+    const enterprises = await prisma.enterprise.findMany({
+      where: {
+        user: { id: userId },
+      },
+      select: {
+        id: true,
+        name: true,
+        credits: true,
+        plan: true,
+        _count: {
+          select: {
+            posts: true,
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      status: 200,
+      data: enterprises,
+    };
+  },
 };
 
 export default UserService;

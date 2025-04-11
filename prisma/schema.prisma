@@ -89,6 +89,7 @@ model Enterprise {
   keywords    String[]
   infos       String   @db.Text
   personality String   @db.Text
+  credits     Int
   plan        Plan
   metrics     String   @default("{}") @map("metrics") @db.Text //JSON STRING
 

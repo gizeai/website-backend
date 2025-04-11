@@ -63,6 +63,8 @@ const UserController = {
   authenticate: async (req: Request, res: Response) => {
     const user = req.user as User;
 
+    const enterprises = await UserService.enterprises(user.id);
+
     res.status(200).json({
       id: user.id,
       name: user.name,
@@ -72,6 +74,7 @@ const UserController = {
       createdAt: user.createdAt,
       updateAt: user.updateAt,
       lastLogin: user.lastLogin,
+      enterprises: enterprises.data,
     });
     return;
   },
