@@ -57,3 +57,32 @@ describe("POST /user/login", () => {
     expect(res.status).toBe(400);
   });
 });
+
+describe("GET /user/auth", () => {
+  it("should return 200", async () => {
+    const res = await axiosBase.get("/user/auth", {
+      headers: {
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIzNzdiNmNmLWNkZDctNGE3Ni05NmMwLTc3MjEwNGM0MTZjOCIsImVtYWlsIjoia2F1YWNvbXRpbDAyMUBnbWFpbC5jb20iLCJuYW1lIjoiS2F1YSBCcmF6IiwiaWF0IjoxNzQ0Mzk5MzYyLCJleHAiOjE3NTIxNzUzNjJ9.UziZ6GPYzPEX_kX4FTAGBFVmqQIQm7rni3vZ3nqUA0k",
+      },
+    });
+
+    const data = res.data;
+
+    expect(res.status).toBe(200);
+    expect(typeof data.id).toBe("string");
+    expect(typeof data.name).toBe("string");
+    expect(typeof data.email).toBe("string");
+    expect(typeof data.avatarUrl).toBe("string");
+    expect(data.verificationCode).toBe(true);
+    expect(typeof data.createdAt).toBe("string");
+    expect(typeof data.updateAt).toBe("string");
+    expect(typeof data.lastLogin).toBe("string");
+  });
+
+  it("should return 401", async () => {
+    const res = await axiosBase.get("/user/auth"); // no token
+
+    expect(res.status).toBe(401);
+  });
+});

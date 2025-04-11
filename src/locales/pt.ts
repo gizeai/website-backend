@@ -18,5 +18,8 @@ export const translation = {
     already_verified: "Usuário já verificado",
     not_verified: "Usuário ainda não foi verificado",
     invalid_password: "Sua senha é inválida",
+    invalid_token: "Autenticação expirada.",
+    not_user_with_token: "Não existe nenhum usuário logado com esse token.",
+    not_logged: "Usuário não logado",
   },
 } as const;

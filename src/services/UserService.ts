@@ -151,7 +151,7 @@ const UserService = {
         return {
           success: true,
           status: 200,
-          data: { auth_token: session.token },
+          data: { success: true, auth_token: session.token },
         };
       } else {
         await prisma.session.delete({ where: { id: session.id } });
@@ -173,7 +173,47 @@ const UserService = {
     return {
       success: true,
       status: 200,
-      data: { auth_token: token },
+      data: { success: true, auth_token: token },
+    };
+  },
+
+  authenticate: async (req: Request, token: string) => {
+    const decode = JsonWebToken.decodeUser(token);
+    if (!decode) {
+      return {
+        success: false,
+        status: 400,
+        data: { error: req.t("user.invalid_token") },
+      };
+    }
+
+    const session = await prisma.session.findFirst({
+      where: { token: token },
+      include: { user: true },
+    });
+
+    if (!session) {
+      return {
+        success: false,
+        status: 400,
+        data: { error: req.t("user.not_user_with_token") },
+      };
+    }
+
+    if (session.expireAt < new Date()) {
+      return {
+        success: false,
+        status: 400,
+        data: { error: req.t("user.invalid_token") },
+      };
+    }
+
+    const user = session.user;
+
+    return {
+      success: true,
+      status: 200,
+      data: user,
     };
   },
 };

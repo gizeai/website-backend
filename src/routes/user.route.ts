@@ -4,6 +4,7 @@ import { Router } from "express";
 import { z } from "zod";
 import i18next from "@/utils/i18n";
 import UserController from "@/controllers/UserController";
+import authentication from "@/middlewares/authentication";
 
 const userRoute = Router();
 
@@ -31,6 +32,9 @@ const userloginSchema = z.object({
 });
 
 userRoute.post("/login", zodschema(userloginSchema), UserController.login);
+
+//GET /api/user/auth
+userRoute.get("/auth", authentication(), UserController.authenticate);
 
 export default {
   path: "/user",

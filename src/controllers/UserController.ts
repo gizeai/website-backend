@@ -1,4 +1,5 @@
 import UserService from "@/services/UserService";
+import { User } from "@prisma/client";
 import { Request, Response } from "express";
 
 const UserController = {
@@ -14,6 +15,7 @@ const UserController = {
 
       if (!result.success) {
         res.status(result.status).json(result.data);
+        return;
       }
 
       res.status(result.status).json(result.data);
@@ -30,6 +32,7 @@ const UserController = {
 
       if (!result.success) {
         res.status(result.status).json(result.data);
+        return;
       }
 
       res.status(result.status).json(result.data);
@@ -46,6 +49,7 @@ const UserController = {
 
       if (!result.success) {
         res.status(result.status).json(result.data);
+        return;
       }
 
       res.status(result.status).json(result.data);
@@ -53,6 +57,23 @@ const UserController = {
       console.error(error);
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
+  },
+
+  //AUTHENTICATE USER
+  authenticate: async (req: Request, res: Response) => {
+    const user = req.user as User;
+
+    res.status(200).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatarUrl: user.avatarUrl,
+      verificationCode: user.verificationCode === "checked",
+      createdAt: user.createdAt,
+      updateAt: user.updateAt,
+      lastLogin: user.lastLogin,
+    });
+    return;
   },
 };
 
