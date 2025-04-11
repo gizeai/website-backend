@@ -55,7 +55,54 @@ userRoute.post("/create", zodschema(userCreateSchema), async (req, res) => {
       },
     });
 
-    res.status(200).json({ created: true });
+    res.status(201).json({ created: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+  }
+});
+
+//POST /api/user/verify
+const userVerifySchema = z.object({
+  email: zodpressets.email,
+  code: z.string().min(6, i18next.t("validators.code_min_6_caracteres")),
+});
+
+userRoute.put("/verify", zodschema(userVerifySchema), async (req, res) => {
+  try {
+    const user = await prisma.user.findFirst({
+      where: { email: req.body.email },
+    });
+
+    if (!user) {
+      res.status(404).json({ error: req.t("user.user_not_found") });
+      return;
+    }
+
+    if (user.verificationCode === "checked") {
+      res.status(400).json({ error: req.t("user.already_verified") });
+      return;
+    }
+
+    if (user.verificationCode !== req.body.code) {
+      res.status(400).json({ error: req.t("user.invalid_code") });
+      return;
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { verificationCode: "checked" },
+    });
+
+    try {
+      const mailer = createMailer();
+      const template = await mailer.template("account-created.hbs", { name: user.name });
+      await mailer.send("account", user.email, "Account created", template, true);
+    } catch (error) {
+      console.error(error);
+    }
+
+    res.status(200).json({ verified: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: req.t("general_erros.internal_server_error") });
