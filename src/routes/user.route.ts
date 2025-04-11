@@ -6,13 +6,14 @@ import { Router } from "express";
 import { z } from "zod";
 import { v4 as uuid } from "uuid";
 import createMailer from "@/emails/email";
+import i18next from "@/services/i18n";
 
 const userRoute = Router();
 
 //POST /api/user/create
 
 const userCreateSchema = z.object({
-  name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
+  name: z.string().min(3, i18next.t("validators.name_min_3_caracteres")),
   email: zodpressets.email,
   password: zodpressets.password,
 });
@@ -28,7 +29,7 @@ userRoute.post("/create", zodschema(userCreateSchema), async (req, res) => {
 
     if (userExists) {
       if (userExists.verificationCode === "checked") {
-        res.status(409).json({ error: "E-mail já cadastrado" });
+        res.status(409).json({ error: req.t("user.email_exists") });
         return;
       }
 
