@@ -1,5 +1,5 @@
 import { z } from "zod";
-import i18next from "@/services/i18n";
+import i18next from "@/utils/i18n";
 
 const zodpressets = {
   password: z
