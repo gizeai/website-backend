@@ -32,13 +32,15 @@ enum Plan {
 }
 
 model User {
-  id          String      @id @default(uuid())
-  name        String
-  email       String      @unique
-  password    String
-  loginMethod LoginMethod @map("login_method")
-  authToken   String?     @map("auth_token")
-  avatarUrl   String      @default("") @map("avatar_url")
+  id               String      @id @default(uuid())
+  signUpId         String      @unique @map("sign_up_id")
+  name             String
+  email            String      @unique
+  password         String
+  loginMethod      LoginMethod @map("login_method")
+  authToken        String?     @map("auth_token")
+  avatarUrl        String      @default("") @map("avatar_url")
+  verificationCode String      @map("verification_code")
 
   enterprises Enterprise[]
 
@@ -46,6 +48,7 @@ model User {
   updateAt  DateTime @updatedAt @map("update_at")
   lastLogin DateTime @default(now()) @map("last_login")
 
+  @@unique([signUpId, email])
   @@map("users")
 }
 
