@@ -1,15 +1,16 @@
 import { z } from "zod";
+import i18next from "@/services/i18n";
 
 const zodpressets = {
   password: z
     .string()
-    .min(8, "A senha deve ter pelo menos 8 caracteres")
-    .regex(/(?=.*[A-Z])/, "A senha deve conter pelo menos uma letra maiúscula")
-    .regex(/(?=.*[a-z])/, "A senha deve conter pelo menos uma letra minúscula")
-    .regex(/(?=.*\d)/, "A senha deve conter pelo menos um número"),
+    .min(8, i18next.t("validators.password_min_8_caracteres"))
+    .regex(/(?=.*[A-Z])/, i18next.t("validators.password_uppercase"))
+    .regex(/(?=.*[a-z])/, i18next.t("validators.password_lowercase"))
+    .regex(/(?=.*\d)/, i18next.t("validators.password_number")),
   email: z
     .string()
-    .email("E-mail inválido")
+    .email(i18next.t("validators.invalid_email"))
     .transform((email) => email.trim().toLowerCase()),
 };
 

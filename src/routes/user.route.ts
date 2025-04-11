@@ -11,7 +11,6 @@ import i18next from "@/services/i18n";
 const userRoute = Router();
 
 //POST /api/user/create
-
 const userCreateSchema = z.object({
   name: z.string().min(3, i18next.t("validators.name_min_3_caracteres")),
   email: zodpressets.email,
@@ -43,7 +42,7 @@ userRoute.post("/create", zodschema(userCreateSchema), async (req, res) => {
       code: randomCode,
     });
 
-    await mailer.send("account", req.body.email, "Verifique seu e-mail", template, true);
+    await mailer.send("account", req.body.email, "Verify your account", template, true);
 
     await prisma.user.create({
       data: {
@@ -59,7 +58,7 @@ userRoute.post("/create", zodschema(userCreateSchema), async (req, res) => {
     res.status(200).json({ created: true });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: req.t("general_erros.internal_server_error") });
   }
 });
 
