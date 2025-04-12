@@ -7,7 +7,12 @@ import requestIp from "request-ip";
 import JsonWebToken from "@/managers/JsonWebToken";
 
 const UserService = {
-  create: async (req: Request, name: string, email: string, password: string) => {
+  create: async (
+    req: Request,
+    name: string,
+    email: string,
+    password: string,
+  ) => {
     const hashPassword = PasswordManager.hashPassword(password);
     const randomCode = Math.random().toString(36).slice(2, 8).toUpperCase();
 
@@ -34,7 +39,13 @@ const UserService = {
       code: randomCode,
     });
 
-    await mailer.send("account", req.body.email, "Verify your account", template, true);
+    await mailer.send(
+      "account",
+      req.body.email,
+      "Verify your account",
+      template,
+      true,
+    );
 
     await prisma.user.create({
       data: {
@@ -90,8 +101,16 @@ const UserService = {
 
     try {
       const mailer = createMailer();
-      const template = await mailer.template("account-created.hbs", { name: user.name });
-      await mailer.send("account", user.email, "Account created", template, true);
+      const template = await mailer.template("account-created.hbs", {
+        name: user.name,
+      });
+      await mailer.send(
+        "account",
+        user.email,
+        "Account created",
+        template,
+        true,
+      );
     } catch (error) {
       console.error(error);
     }
@@ -158,7 +177,11 @@ const UserService = {
       }
     }
 
-    const token = JsonWebToken.signUser({ id: user.id, email: user.email, name: user.name });
+    const token = JsonWebToken.signUser({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    });
 
     await prisma.session.create({
       data: {

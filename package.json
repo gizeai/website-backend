@@ -13,7 +13,8 @@
     "prettier:lint": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "prisma:generate": "npx prisma generate",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "lint:check": "eslint . --ext .ts --quiet"
   },
   "keywords": [],
   "author": "",

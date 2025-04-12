@@ -8,10 +8,16 @@ import JsonWebToken from "@/managers/JsonWebToken";
 
 const authRouter = Router();
 
-authRouter.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+authRouter.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+);
 authRouter.get(
   "/microsoft",
-  passport.authenticate("azuread-openidconnect", { failureRedirect: "/", session: false })
+  passport.authenticate("azuread-openidconnect", {
+    failureRedirect: "/",
+    session: false,
+  }),
 );
 
 const handleAuthCallback = async (req: Request, res: Response) => {
@@ -40,7 +46,11 @@ const handleAuthCallback = async (req: Request, res: Response) => {
     }
   }
 
-  const token = JsonWebToken.signUser({ id: user.id, email: user.email, name: user.name });
+  const token = JsonWebToken.signUser({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+  });
 
   await prisma.session.create({
     data: {
@@ -59,13 +69,16 @@ const handleAuthCallback = async (req: Request, res: Response) => {
 authRouter.get(
   "/google/callback",
   passport.authenticate("google", { session: false, failureRedirect: "/" }),
-  handleAuthCallback
+  handleAuthCallback,
 );
 
 authRouter.get(
   "/auth/microsoft/callback",
-  passport.authenticate("azuread-openidconnect", { failureRedirect: "/", session: false }),
-  handleAuthCallback
+  passport.authenticate("azuread-openidconnect", {
+    failureRedirect: "/",
+    session: false,
+  }),
+  handleAuthCallback,
 );
 
 export default {

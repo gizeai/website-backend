@@ -28,9 +28,15 @@ describe("GET /", () => {
     expect(data.dependencies.database.latency).toHaveProperty("second_query");
     expect(data.dependencies.database.latency).toHaveProperty("third_query");
 
-    expect(typeof data.dependencies.database.latency.first_query).toBe("number");
-    expect(typeof data.dependencies.database.latency.second_query).toBe("number");
-    expect(typeof data.dependencies.database.latency.third_query).toBe("number");
+    expect(typeof data.dependencies.database.latency.first_query).toBe(
+      "number",
+    );
+    expect(typeof data.dependencies.database.latency.second_query).toBe(
+      "number",
+    );
+    expect(typeof data.dependencies.database.latency.third_query).toBe(
+      "number",
+    );
 
     expect(data.webserver).toHaveProperty("node_version");
     expect(data.webserver).toHaveProperty("uptime");

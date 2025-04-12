@@ -42,7 +42,7 @@ export default function createMailer(
   port?: number,
   secure?: boolean,
   user?: string,
-  pass?: string
+  pass?: string,
 ) {
   if (host) config.host = host;
   if (port) config.port = port;
@@ -62,7 +62,10 @@ export default function createMailer(
     | "account-created.hbs"
     | "password-reset.hbs"
     | "password_reseted.hbs";
-  async function renderTemplate(pathname: templates, data: Record<string, unknown>) {
+  async function renderTemplate(
+    pathname: templates,
+    data: Record<string, unknown>,
+  ) {
     const filePath = path.resolve(__dirname, "templates", pathname);
     const source = fs.readFileSync(filePath, "utf-8");
     const template = handlebars.compile(source);
@@ -74,7 +77,7 @@ export default function createMailer(
     to: string,
     subject: string,
     message: string,
-    html: boolean = false
+    html: boolean = false,
   ) {
     try {
       const verify = await transporter.verify();
