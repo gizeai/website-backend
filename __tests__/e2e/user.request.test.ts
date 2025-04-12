@@ -92,3 +92,42 @@ describe("GET /user/auth", () => {
     expect(res.status).toBe(401);
   });
 });
+
+describe("POST /user/reedem", () => {
+  it("should return 200", async () => {
+    const res = await axiosBase.post("/user/reedem", {
+      email: "kauacomtil021@gmail.com",
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.data.success).toBe(true);
+  });
+
+  it("should return 404", async () => {
+    const res = await axiosBase.post("/user/reedem", {
+      email: "9128319831293819238jdwadjawlkdj@gmail.com",
+    });
+
+    expect(res.status).toBe(404);
+  });
+});
+
+describe("POST /user/reedem", () => {
+  it("should return 404 not user", async () => {
+    const res = await axiosBase.put("/user/reedem/IJDKADD", {
+      email: "9128319831293819238jdwadjawlkdj@gmail.com",
+      password: "123456Kaun",
+    });
+
+    expect(res.status).toBe(404);
+  });
+
+  it("should return 404 code not found", async () => {
+    const res = await axiosBase.put("/user/reedem/IJDKAcDD", {
+      email: "kauacomtil021@gmail.com",
+      password: "123456Kaun",
+    });
+
+    expect(res.status).toBe(404);
+  });
+});

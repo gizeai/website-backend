@@ -10,7 +10,7 @@ const UserController = {
         req,
         req.body.name,
         req.body.email,
-        req.body.password,
+        req.body.password
       );
 
       if (!result.success) {
@@ -21,20 +21,14 @@ const UserController = {
       res.status(result.status).json(result.data);
     } catch (error) {
       console.error(error);
-      res
-        .status(500)
-        .json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
   },
 
   //VERIFY USER
   verify: async (req: Request, res: Response) => {
     try {
-      const result = await UserService.verify(
-        req,
-        req.body.email,
-        req.body.code,
-      );
+      const result = await UserService.verify(req, req.body.email, req.body.code);
 
       if (!result.success) {
         res.status(result.status).json(result.data);
@@ -44,20 +38,14 @@ const UserController = {
       res.status(result.status).json(result.data);
     } catch (error) {
       console.error(error);
-      res
-        .status(500)
-        .json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
   },
 
   //LOGIN USER
   login: async (req: Request, res: Response) => {
     try {
-      const result = await UserService.login(
-        req,
-        req.body.email,
-        req.body.password,
-      );
+      const result = await UserService.login(req, req.body.email, req.body.password);
 
       if (!result.success) {
         res.status(result.status).json(result.data);
@@ -67,9 +55,7 @@ const UserController = {
       res.status(result.status).json(result.data);
     } catch (error) {
       console.error(error);
-      res
-        .status(500)
-        .json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
   },
 
@@ -91,6 +77,41 @@ const UserController = {
       enterprises: enterprises.data,
     });
     return;
+  },
+
+  // REEDEM USER
+  reedem: async (req: Request, res: Response) => {
+    try {
+      const result = await UserService.reedem(req, req.body.email);
+
+      if (!result.success) {
+        res.status(result.status).json(result.data);
+        return;
+      }
+
+      res.status(result.status).json(result.data);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+    }
+  },
+
+  // REEDEM CODE
+  reedemCode: async (req: Request, res: Response) => {
+    try {
+      const code = req.params.code;
+      const result = await UserService.reedemCode(req, req.body.email, code, req.body.password);
+
+      if (!result.success) {
+        res.status(result.status).json(result.data);
+        return;
+      }
+
+      res.status(result.status).json(result.data);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+    }
   },
 };
 

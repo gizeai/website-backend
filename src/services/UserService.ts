@@ -7,12 +7,7 @@ import requestIp from "request-ip";
 import JsonWebToken from "@/managers/JsonWebToken";
 
 const UserService = {
-  create: async (
-    req: Request,
-    name: string,
-    email: string,
-    password: string,
-  ) => {
+  create: async (req: Request, name: string, email: string, password: string) => {
     const hashPassword = PasswordManager.hashPassword(password);
     const randomCode = Math.random().toString(36).slice(2, 8).toUpperCase();
 
@@ -39,13 +34,7 @@ const UserService = {
       code: randomCode,
     });
 
-    await mailer.send(
-      "account",
-      req.body.email,
-      "Verify your account",
-      template,
-      true,
-    );
+    await mailer.send("account", req.body.email, "Verify your account", template, true);
 
     await prisma.user.create({
       data: {
@@ -104,13 +93,7 @@ const UserService = {
       const template = await mailer.template("account-created.hbs", {
         name: user.name,
       });
-      await mailer.send(
-        "account",
-        user.email,
-        "Account created",
-        template,
-        true,
-      );
+      await mailer.send("account", user.email, "Account created", template, true);
     } catch (error) {
       console.error(error);
     }
@@ -262,6 +245,116 @@ const UserService = {
       success: true,
       status: 200,
       data: enterprises,
+    };
+  },
+
+  reedem: async (req: Request, email: string) => {
+    const user = await prisma.user.findFirst({
+      where: { email: email },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: req.t("user.user_not_found_with_email") },
+      };
+    }
+
+    const isReedem = await prisma.reedemPassword.findFirst({
+      where: { userId: user.id },
+    });
+
+    let code = Math.random().toString(36).slice(2, 8).toUpperCase();
+    let isReedemVerify = false;
+
+    if (isReedem && isReedem.expireAt < new Date()) {
+      code = isReedem.code;
+      isReedemVerify = true;
+    }
+
+    if (!isReedemVerify) {
+      await prisma.reedemPassword.create({
+        data: {
+          code: code,
+          userId: user.id,
+          expireAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
+        },
+      });
+    }
+
+    const mailer = createMailer();
+
+    const template = await mailer.template("password-reset.hbs", {
+      name: user.name,
+      code: code,
+      email: user.email,
+    });
+
+    await mailer.send("account", user.email, "Reset your password", template, true);
+
+    return {
+      success: true,
+      status: 200,
+      data: { success: true },
+    };
+  },
+
+  reedemCode: async (req: Request, email: string, code: string, password: string) => {
+    const user = await prisma.user.findFirst({
+      where: { email: email },
+      select: { id: true, name: true },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: req.t("user.user_not_found_with_email") },
+      };
+    }
+
+    const reedem = await prisma.reedemPassword.findFirst({
+      where: { code: code, userId: user.id },
+    });
+
+    if (!reedem) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: req.t("user.code_not_found") },
+      };
+    }
+
+    const hash = PasswordManager.hashPassword(password);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hash,
+      },
+    });
+
+    await prisma.reedemPassword.delete({
+      where: { id: reedem.id },
+    });
+
+    try {
+      const mailer = createMailer();
+
+      const template = await mailer.template("password_reseted.hbs", {
+        name: user.name,
+      });
+
+      await mailer.send("account", email, "Password reseted", template, true);
+    } catch (error) {
+      console.error(error);
+    }
+
+    return {
+      success: true,
+      status: 200,
+      data: { success: true },
     };
   },
 };

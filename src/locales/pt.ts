@@ -14,6 +14,7 @@ export const translation = {
   user: {
     email_exists: "E-mail já cadastrado",
     user_not_found: "Usuário não encontrado",
+    user_not_found_with_email: "Não encontramos nenhum usuário com esse e-mail.",
     invalid_code: "Código de verificação inválido",
     already_verified: "Usuário já verificado",
     not_verified: "Usuário ainda não foi verificado",
@@ -21,5 +22,6 @@ export const translation = {
     invalid_token: "Autenticação expirada.",
     not_user_with_token: "Não existe nenhum usuário logado com esse token.",
     not_logged: "Usuário não logado",
+    code_not_found: "Código de verificação inválido",
   },
 } as const;

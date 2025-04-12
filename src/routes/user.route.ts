@@ -36,6 +36,21 @@ userRoute.post("/login", zodschema(userloginSchema), UserController.login);
 //GET /api/user/auth
 userRoute.get("/auth", authentication(), UserController.authenticate);
 
+//POST /api/user/reedem
+const userReedemSchema = z.object({
+  email: zodpressets.email,
+});
+
+userRoute.post("/reedem", zodschema(userReedemSchema), UserController.reedem);
+
+//PUT /api/user/reedem/:code
+const userReedemCodeSchema = z.object({
+  email: zodpressets.email,
+  password: zodpressets.password,
+});
+
+userRoute.put("/reedem/:code", zodschema(userReedemCodeSchema), UserController.reedemCode);
+
 export default {
   path: "/user",
   router: userRoute,
