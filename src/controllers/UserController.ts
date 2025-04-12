@@ -1,4 +1,5 @@
 import UserService from "@/services/UserService";
+import logger from "@/utils/logger";
 import { User } from "@prisma/client";
 import { Request, Response } from "express";
 
@@ -20,7 +21,7 @@ const UserController = {
 
       res.status(result.status).json(result.data);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
   },
@@ -37,7 +38,7 @@ const UserController = {
 
       res.status(result.status).json(result.data);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
   },
@@ -54,7 +55,7 @@ const UserController = {
 
       res.status(result.status).json(result.data);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
   },
@@ -91,7 +92,7 @@ const UserController = {
 
       res.status(result.status).json(result.data);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
   },
@@ -109,7 +110,7 @@ const UserController = {
 
       res.status(result.status).json(result.data);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
   },

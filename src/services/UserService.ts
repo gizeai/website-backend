@@ -5,6 +5,7 @@ import { Request } from "express";
 import { v4 as uuid } from "uuid";
 import requestIp from "request-ip";
 import JsonWebToken from "@/managers/JsonWebToken";
+import logger from "@/utils/logger";
 
 const UserService = {
   create: async (req: Request, name: string, email: string, password: string) => {
@@ -95,7 +96,7 @@ const UserService = {
       });
       await mailer.send("account", user.email, "Account created", template, true);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
 
     return {
@@ -348,7 +349,7 @@ const UserService = {
 
       await mailer.send("account", email, "Password reseted", template, true);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
 
     return {

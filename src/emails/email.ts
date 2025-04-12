@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import handlebars from "handlebars";
 import fs from "fs";
 import path from "path";
+import logger from "@/utils/logger";
 
 const user = process.env.EMAIL_USER as string;
 const pass = process.env.EMAIL_PASS as string;
@@ -42,7 +43,7 @@ export default function createMailer(
   port?: number,
   secure?: boolean,
   user?: string,
-  pass?: string,
+  pass?: string
 ) {
   if (host) config.host = host;
   if (port) config.port = port;
@@ -62,10 +63,7 @@ export default function createMailer(
     | "account-created.hbs"
     | "password-reset.hbs"
     | "password_reseted.hbs";
-  async function renderTemplate(
-    pathname: templates,
-    data: Record<string, unknown>,
-  ) {
+  async function renderTemplate(pathname: templates, data: Record<string, unknown>) {
     const filePath = path.resolve(__dirname, "templates", pathname);
     const source = fs.readFileSync(filePath, "utf-8");
     const template = handlebars.compile(source);
@@ -77,7 +75,7 @@ export default function createMailer(
     to: string,
     subject: string,
     message: string,
-    html: boolean = false,
+    html: boolean = false
   ) {
     try {
       const verify = await transporter.verify();
@@ -96,7 +94,7 @@ export default function createMailer(
 
       return false;
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       return false;
     }
   }
