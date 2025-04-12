@@ -16,7 +16,7 @@ apiRouter.get("/", async (_req, res) => {
 
     const nodeVersion = process.version;
     const updateAt = new Date().toISOString();
-    const timezone = process.env.TIMEZONE || "America/Sao_Paulo";
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const uptime = process.uptime();
 
     const maxConnections: { setting: string }[] =
