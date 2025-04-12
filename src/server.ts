@@ -1,5 +1,15 @@
 import "dotenv/config";
 import app from "./app";
+import * as fs from "fs";
+
+if (!fs.existsSync("./logs")) {
+  fs.mkdirSync("./logs");
+  fs.writeFileSync("./logs/app.log", "");
+}
+
+if (!fs.existsSync("./uploads")) {
+  fs.mkdirSync("./uploads");
+}
 
 const port = process.env.EXPRESS_PORT || 3000;
 
