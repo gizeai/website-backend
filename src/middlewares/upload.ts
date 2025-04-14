@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
   },
 });
 
-function upload(formname: string, uploadLimitInMb = 5) {
+function upload(formname: string, uploadLimitInMb = 3) {
   const uploadMiddleware = multer({
     storage,
     limits: {
