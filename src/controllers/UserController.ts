@@ -114,6 +114,24 @@ const UserController = {
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
   },
+
+  //INVOICES USER
+  invoices: async (req: Request, res: Response) => {
+    try {
+      const userId = (req.user as User).id;
+      const result = await UserService.invoices(userId);
+
+      if (!result.success) {
+        res.status(result.status).json(result.data);
+        return;
+      }
+
+      res.status(result.status).json(result.data);
+    } catch (error) {
+      logger.error(error);
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+    }
+  },
 };
 
 export default UserController;

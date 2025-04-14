@@ -4,7 +4,7 @@ import { Router } from "express";
 
 const apiRouter = Router();
 
-apiRouter.get("/", async (_req, res) => {
+apiRouter.get("/", async (req, res) => {
   try {
     async function getLatence() {
       const start = performance.now();
@@ -51,7 +51,7 @@ FROM pg_stat_activity WHERE backend_type = 'client backend';`;
     });
   } catch (error) {
     logger.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: req.t("general_erros.internal_server_error") });
   } finally {
     await prisma.$disconnect();
   }

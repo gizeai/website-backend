@@ -51,6 +51,9 @@ const userReedemCodeSchema = z.object({
 
 userRoute.put("/reedem/:code", zodschema(userReedemCodeSchema), UserController.reedemCode);
 
+//PUT /api/user/invoices
+userRoute.get("/invoices", authentication(), UserController.invoices);
+
 export default {
   path: "/user",
   router: userRoute,

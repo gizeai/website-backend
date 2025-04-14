@@ -358,6 +358,40 @@ const UserService = {
       data: { success: true },
     };
   },
+
+  invoices: async (userId: string) => {
+    const enterprises = await prisma.enterprise.findMany({
+      where: {
+        user: { id: userId },
+      },
+    });
+
+    const invoices = await prisma.invoice.findMany({
+      where: {
+        enterpriseId: {
+          in: enterprises.map((enterprise) => enterprise.id),
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    const sortInvoices = invoices.sort((a, b) => {
+      if (a.status === "PENDING" && b.status !== "PENDING") return -1;
+      if (a.status === "PAID" && b.status !== "PAID") return -1;
+      if (a.status !== "PENDING" && b.status === "PENDING") return 1;
+      if (a.status !== "PAID" && b.status === "PAID") return 1;
+
+      return 0;
+    });
+
+    return {
+      success: true,
+      status: 200,
+      data: sortInvoices,
+    };
+  },
 };
 
 export default UserService;
