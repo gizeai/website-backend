@@ -7,10 +7,8 @@ export default function zodschema(schema: ZodSchema) {
 
     if (!result.success) {
       const messages: string[] = [];
-      result.error.issues.forEach((issue) => {
-        messages.push(
-          `${issue.path[0] ? `${issue.path[0]} ` : ""}${issue.message}`,
-        );
+      result.error.issues.forEach(issue => {
+        messages.push(`${issue.path[0] ? `${issue.path[0]} ` : ""}${issue.message}`);
       });
 
       res.status(400).json({ error: messages.join(", ") });

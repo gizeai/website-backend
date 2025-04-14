@@ -8,16 +8,13 @@ import JsonWebToken from "@/managers/JsonWebToken";
 
 const authRouter = Router();
 
-authRouter.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] }),
-);
+authRouter.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 authRouter.get(
   "/microsoft",
   passport.authenticate("azuread-openidconnect", {
     failureRedirect: "/",
     session: false,
-  }),
+  })
 );
 
 const handleAuthCallback = async (req: Request, res: Response) => {
@@ -69,7 +66,7 @@ const handleAuthCallback = async (req: Request, res: Response) => {
 authRouter.get(
   "/google/callback",
   passport.authenticate("google", { session: false, failureRedirect: "/" }),
-  handleAuthCallback,
+  handleAuthCallback
 );
 
 authRouter.get(
@@ -78,7 +75,7 @@ authRouter.get(
     failureRedirect: "/",
     session: false,
   }),
-  handleAuthCallback,
+  handleAuthCallback
 );
 
 export default {

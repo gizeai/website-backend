@@ -44,8 +44,8 @@ passport.use(
       } catch (err) {
         return done(err, false);
       }
-    },
-  ),
+    }
+  )
 );
 
 // TODO: Habilitar o login com a Microsoft depois.

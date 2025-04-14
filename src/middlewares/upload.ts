@@ -24,7 +24,7 @@ function upload(formname: string, uploadLimitInMb = 3) {
   }).single(formname);
 
   return (req: Request, res: Response, next: NextFunction) => {
-    uploadMiddleware(req, res, async (err) => {
+    uploadMiddleware(req, res, async err => {
       if (err) {
         if (err.code === "LIMIT_FILE_SIZE") {
           res.status(400).json({ error: req.t("general_erros.file_too_large") });

@@ -11,7 +11,7 @@ const zodpressets = {
   email: z
     .string()
     .email(i18next.t("validators.invalid_email"))
-    .transform((email) => email.trim().toLowerCase()),
+    .transform(email => email.trim().toLowerCase()),
 };
 
 export default zodpressets;

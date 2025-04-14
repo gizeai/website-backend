@@ -7,7 +7,7 @@ import uploadRoute from "./upload.route";
 function registerRoutes(app: Express) {
   const routes: { path: string; router: Router }[] = [apiRoute, userRoute, authRoute, uploadRoute];
 
-  routes.forEach((route) => {
+  routes.forEach(route => {
     app.use(`/api${route.path}`, route.router);
   });
 }

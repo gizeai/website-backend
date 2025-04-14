@@ -11,8 +11,8 @@
     "test": "jest",
     "test:band": "jest --runInBand",
     "test:watch": "jest --watch",
-    "prettier:lint": "prettier --check .",
-    "prettier:fix": "prettier --write .",
+    "prettier:lint": "prettier --check \"src/**/*.{ts,tsx}\"",
+    "prettier:fix": "prettier --write \"src/**/*.{ts,tsx}\"",
     "prisma:generate": "npx prisma generate",
     "lint": "eslint . --ext .ts",
     "lint:check": "eslint . --ext .ts --quiet"

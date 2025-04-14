@@ -371,7 +371,7 @@ const UserService = {
     const invoices = await prisma.invoice.findMany({
       where: {
         enterpriseId: {
-          in: enterprises.map((enterprise) => enterprise.id),
+          in: enterprises.map(enterprise => enterprise.id),
         },
       },
       orderBy: {
