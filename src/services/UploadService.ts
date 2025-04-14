@@ -5,11 +5,6 @@ import * as fs from "fs";
 
 const UploadService = {
   upload: async (req: Request, file: Express.Multer.File) => {
-    const filename = file.filename;
-    const path = file.path;
-    const mimetype = file.mimetype;
-    const size = file.size;
-    const originalname = file.originalname;
     let userid = "";
 
     if (req.user) {
@@ -19,12 +14,12 @@ const UploadService = {
 
     const upload = await prisma.upload.create({
       data: {
-        fileName: filename,
+        fileName: file.filename,
         userId: userid,
-        originalName: originalname,
-        mimeType: mimetype,
-        size: size,
-        storedLocation: path,
+        originalName: file.originalname,
+        mimeType: file.mimetype,
+        size: file.size,
+        storedLocation: file.path,
       },
     });
 

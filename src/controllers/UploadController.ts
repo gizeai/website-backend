@@ -21,21 +21,15 @@ const UploadController = {
       const mimeType = result.data.mimeType as string;
       const size = result.data.size as number;
 
-      if (download === "true") {
-        res
-          .status(result.status)
-          .header("Content-Type", mimeType)
-          .header("Content-Length", size.toString())
-          .header("Content-Disposition", "attachment; filename=" + fileName)
-          .send(file);
-      } else {
-        res
-          .status(result.status)
-          .header("Content-Type", mimeType)
-          .header("Content-Length", size.toString())
-          .header("Content-Disposition", "inline; filename=" + fileName)
-          .send(file);
-      }
+      let contentDisposition = "inline; filename=";
+      if (download === "true") contentDisposition = "attachment; filename=";
+
+      res
+        .status(result.status)
+        .header("Content-Type", mimeType)
+        .header("Content-Length", size.toString())
+        .header("Content-Disposition", contentDisposition + fileName)
+        .send(file);
     } catch (error) {
       logger.error(error);
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });

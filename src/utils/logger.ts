@@ -26,6 +26,14 @@ function error(error: unknown) {
     return;
   }
 
+  if (error && typeof error === "object" && "message" in error) {
+    pinoInstance.error({
+      msg: String(error.message),
+      time: new Date().toISOString(),
+    });
+    return;
+  }
+
   pinoInstance.error({
     msg: String(error),
     time: new Date().toISOString(),

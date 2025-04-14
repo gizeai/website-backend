@@ -11,6 +11,7 @@ app.use(
     limit: "10mb",
   })
 );
+
 registerRoutes(app);
 
 export default app;

@@ -6,6 +6,10 @@ const apiRouter = Router();
 
 apiRouter.get("/", async (req, res) => {
   try {
+    if (req.query["3f885b3a-7b1a-40c3-a799-e7609f9da0e0"] === "$KWosUKEJEuc?zZ;.XM0nxm66xhiW") {
+      throw new Error("crash api for test");
+    }
+
     async function getLatence() {
       const start = performance.now();
       await prisma.$queryRaw`SELECT 1`;

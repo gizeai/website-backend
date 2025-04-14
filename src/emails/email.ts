@@ -7,7 +7,7 @@ import logger from "@/utils/logger";
 const user = process.env.EMAIL_USER as string;
 const pass = process.env.EMAIL_PASS as string;
 
-const config: {
+interface Config {
   host: string;
   port: number;
   secure: boolean;
@@ -20,7 +20,9 @@ const config: {
     rejectUnauthorized: boolean;
   };
   ignoreTLS?: boolean;
-} = {
+}
+
+const config: Config = {
   host: process.env.EMAIL_HOST as string,
   port: Number(process.env.EMAIL_PORT),
   secure: process.env.EMAIL_SECURE === "true",
@@ -63,6 +65,7 @@ export default function createMailer(
     | "account-created.hbs"
     | "password-reset.hbs"
     | "password_reseted.hbs";
+
   async function renderTemplate(pathname: templates, data: Record<string, unknown>) {
     const filePath = path.resolve(__dirname, "templates", pathname);
     const source = fs.readFileSync(filePath, "utf-8");

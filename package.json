@@ -9,6 +9,7 @@
     "services:up": "docker compose up -d",
     "services:down": "docker compose down",
     "test": "jest",
+    "test:band": "jest --runInBand",
     "test:watch": "jest --watch",
     "prettier:lint": "prettier --check .",
     "prettier:fix": "prettier --write .",

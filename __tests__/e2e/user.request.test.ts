@@ -26,6 +26,16 @@ describe("POST /user/create", () => {
 
     expect(res.status).toBe(400);
   });
+
+  it("should return 404 for duplicate email", async () => {
+    const res = await axiosBase.post("/user/create", {
+      name: "John Doe",
+      email: "kauacomtil021@gmail.com",
+      password: "Kaua129837",
+    });
+
+    expect(res.status).toBe(409);
+  });
 });
 
 describe("PUT /user/verify", () => {
@@ -90,6 +100,17 @@ describe("GET /user/auth", () => {
     const res = await axiosBase.get("/user/auth"); // no token
 
     expect(res.status).toBe(401);
+  });
+
+  it("should return 200", async () => {
+    const res = await axiosBase.get("/user/auth", {
+      headers: {
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIzNzdiNmamLWNkZDctNGE3Ni05NmMwLTc3MjEwNGM0MTZjOCIsImVtYWlsIjoia2F1YWNvbXRpbDAyMUBnbWFpbC5jb20iLCJuYW1lIjoiS2F1YSBCcmF6IiwiaWF0IjoxNzQ0Mzk5MzYyLCJleHAiOjE3NTIxNzUzNjJ9.UziZ6GPYzPEX_kX4FTAGBFVmqQIQm7rni3vZ3nqUA0k",
+      },
+    });
+
+    expect(res.status).toBe(404);
   });
 });
 
