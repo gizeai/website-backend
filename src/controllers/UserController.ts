@@ -132,6 +132,28 @@ const UserController = {
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
   },
+
+  //EDIT USER
+  edit: async (req: Request, res: Response) => {
+    try {
+      const userId = req.user as User;
+      const upload = req.upload;
+      const userName = req.body.name as string | undefined;
+      const password = req.body.password as string | undefined;
+
+      const result = await UserService.edit(req, userId, userName, password, upload);
+
+      if (!result.success) {
+        res.status(result.status).json(result.data);
+        return;
+      }
+
+      res.status(result.status).json(result.data);
+    } catch (error) {
+      logger.error(error);
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+    }
+  },
 };
 
 export default UserController;

@@ -145,3 +145,34 @@ describe("POST /user/invoices", () => {
     expect(Array.isArray(res.data)).toBe(true);
   });
 });
+
+describe("POST /user/edit", () => {
+  it("should return 200", async () => {
+    const formdata = new FormData();
+    formdata.append("name", "Kauã");
+
+    const res = await axiosBase.put("/user/edit", formdata, {
+      headers: {
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIzNzdiNmNmLWNkZDctNGE3Ni05NmMwLTc3MjEwNGM0MTZjOCIsImVtYWlsIjoia2F1YWNvbXRpbDAyMUBnbWFpbC5jb20iLCJuYW1lIjoiS2F1YSBCcmF6IiwiaWF0IjoxNzQ0Mzk5MzYyLCJleHAiOjE3NTIxNzUzNjJ9.UziZ6GPYzPEX_kX4FTAGBFVmqQIQm7rni3vZ3nqUA0k",
+      },
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.data).toHaveProperty("update");
+    expect(res.data.update).toHaveProperty("name");
+  });
+
+  it("should return 404", async () => {
+    const formdata = new FormData();
+    formdata.append("name", "Kauã");
+
+    const res = await axiosBase.put("/user/edit", formdata, {
+      headers: {
+        Authorization: "Bearer dwad",
+      },
+    });
+
+    expect(res.status).toBe(404);
+  });
+});

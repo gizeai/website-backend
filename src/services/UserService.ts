@@ -6,6 +6,8 @@ import { v4 as uuid } from "uuid";
 import requestIp from "request-ip";
 import JsonWebToken from "@/managers/JsonWebToken";
 import logger from "@/utils/logger";
+import { Upload, User } from "@prisma/client";
+import mounthUploadURL from "@/utils/mounthUploadURL";
 
 const UserService = {
   create: async (req: Request, name: string, email: string, password: string) => {
@@ -189,7 +191,7 @@ const UserService = {
     if (!decode) {
       return {
         success: false,
-        status: 400,
+        status: 404,
         data: { error: req.t("user.invalid_token") },
       };
     }
@@ -202,7 +204,7 @@ const UserService = {
     if (!session) {
       return {
         success: false,
-        status: 400,
+        status: 404,
         data: { error: req.t("user.not_user_with_token") },
       };
     }
@@ -210,7 +212,7 @@ const UserService = {
     if (session.expireAt < new Date()) {
       return {
         success: false,
-        status: 400,
+        status: 404,
         data: { error: req.t("user.invalid_token") },
       };
     }
@@ -390,6 +392,50 @@ const UserService = {
       success: true,
       status: 200,
       data: sortInvoices,
+    };
+  },
+
+  edit: async (
+    req: Request,
+    user: User,
+    name: string | undefined,
+    password: string | undefined,
+    upload: Upload | undefined
+  ) => {
+    const edit: {
+      name?: string;
+      password?: string;
+      avatarUrl?: string;
+    } = {};
+
+    if (name) {
+      edit.name = name;
+    }
+
+    if (password) {
+      const hashPassword = PasswordManager.hashPassword(password);
+      edit.password = hashPassword;
+    }
+
+    if (upload) {
+      const url = mounthUploadURL(upload);
+      edit.avatarUrl = url;
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: edit,
+    });
+
+    return {
+      success: true,
+      status: 200,
+      data: {
+        update: {
+          ...edit,
+          password: undefined,
+        },
+      },
     };
   },
 };

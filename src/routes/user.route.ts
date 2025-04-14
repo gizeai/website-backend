@@ -5,6 +5,7 @@ import { z } from "zod";
 import i18next from "@/utils/i18n";
 import UserController from "@/controllers/UserController";
 import authentication from "@/middlewares/authentication";
+import upload from "@/middlewares/upload";
 
 const userRoute = Router();
 
@@ -53,6 +54,9 @@ userRoute.put("/reedem/:code", zodschema(userReedemCodeSchema), UserController.r
 
 //PUT /api/user/invoices
 userRoute.get("/invoices", authentication(), UserController.invoices);
+
+//PUT /api/user/edit
+userRoute.put("/edit", authentication(), upload("avatar"), UserController.edit);
 
 export default {
   path: "/user",

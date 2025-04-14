@@ -10,6 +10,10 @@ export const translation = {
   },
   general_erros: {
     internal_server_error: "Ocorreu um erro interno no servidor",
+    upload_error: "Houve um erro ao fazer o upload do arquivo.",
+    file_not_send: "O arquivo não foi enviado.",
+    file_too_large: "O arquivo enviado é muito grande.",
+    not_permission_to_action: "Você não tem permissão para executar essa ação.",
   },
   user: {
     email_exists: "E-mail já cadastrado",
@@ -23,5 +27,8 @@ export const translation = {
     not_user_with_token: "Não existe nenhum usuário logado com esse token.",
     not_logged: "Usuário não logado",
     code_not_found: "Código de verificação inválido",
+  },
+  upload: {
+    file_not_found: "Arquivo nao encontrado",
   },
 } as const;
