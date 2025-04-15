@@ -396,7 +396,7 @@ const UserService = {
   },
 
   edit: async (
-    req: Request,
+    _req: Request,
     user: User,
     name: string | undefined,
     password: string | undefined,

@@ -5,7 +5,7 @@ const pinoInstance = pino({
     targets: [
       {
         target: "pino/file",
-        options: { destination: "./logs/app.log" },
+        options: { destination: "./__cache__/app.log" },
         level: "error",
       },
     ],

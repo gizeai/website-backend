@@ -31,6 +31,12 @@ enum Plan {
   VIRAL
 }
 
+enum PostType {
+  IMAGE
+  VIDEO
+  CARROUSEL
+}
+
 model User {
   id               String      @id @default(uuid())
   signUpId         String      @unique @map("sign_up_id")
@@ -136,12 +142,16 @@ model Post {
   enterpriseId String     @map("enterprise_id")
 
   title              String
-  promptSent         String  @map("body_send")
-  artModel           String  @map("art_model")
-  type               String
-  instructions       String  @default("{}") @db.Text //JSON STRING
-  responseBody       String? @map("response_body")
-  responseAttachment String? @map("response_attachment")
+  promptSent         String   @map("body_send")
+  artModel           String   @map("art_model")
+  type               PostType
+  instructions       String   @default("{}") @db.Text //JSON STRING
+  responseBody       String?  @map("response_body")
+  responseAttachment String[] @map("response_attachment")
+
+  iaModel     String @map("ia_model")
+  edits       Int    @default(0) @map("edits")
+  creditsUsed Int    @map("credits_used")
 
   createdAt DateTime @default(now()) @map("created_at")
   updateAt  DateTime @updatedAt @map("update_at")
@@ -168,6 +178,16 @@ model Invoice {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("invoices")
+}
+
+model InvoicePack {
+  id       String   @id @default(uuid())
+  invoices String[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updateAt  DateTime @updatedAt @map("update_at")
+
+  @@map("invoice_packs")
 }
 
 model Upload {
