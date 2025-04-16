@@ -1,3 +1,169 @@
+export enum Currencys {
+  BRL = "BRL",
+  AED = "AED",
+  AFN = "AFN",
+  ALL = "ALL",
+  AMD = "AMD",
+  ANG = "ANG",
+  AOA = "AOA",
+  ARS = "ARS",
+  AUD = "AUD",
+  AWG = "AWG",
+  AZN = "AZN",
+  BAM = "BAM",
+  BBD = "BBD",
+  BDT = "BDT",
+  BGN = "BGN",
+  BHD = "BHD",
+  BIF = "BIF",
+  BMD = "BMD",
+  BND = "BND",
+  BOB = "BOB",
+  BSD = "BSD",
+  BTN = "BTN",
+  BWP = "BWP",
+  BYN = "BYN",
+  BZD = "BZD",
+  CAD = "CAD",
+  CDF = "CDF",
+  CHF = "CHF",
+  CLP = "CLP",
+  CNY = "CNY",
+  COP = "COP",
+  CRC = "CRC",
+  CUP = "CUP",
+  CVE = "CVE",
+  CZK = "CZK",
+  DJF = "DJF",
+  DKK = "DKK",
+  DOP = "DOP",
+  DZD = "DZD",
+  EGP = "EGP",
+  ERN = "ERN",
+  ETB = "ETB",
+  EUR = "EUR",
+  FJD = "FJD",
+  FKP = "FKP",
+  FOK = "FOK",
+  GBP = "GBP",
+  GEL = "GEL",
+  GGP = "GGP",
+  GHS = "GHS",
+  GIP = "GIP",
+  GMD = "GMD",
+  GNF = "GNF",
+  GTQ = "GTQ",
+  GYD = "GYD",
+  HKD = "HKD",
+  HNL = "HNL",
+  HRK = "HRK",
+  HTG = "HTG",
+  HUF = "HUF",
+  IDR = "IDR",
+  ILS = "ILS",
+  IMP = "IMP",
+  INR = "INR",
+  IQD = "IQD",
+  IRR = "IRR",
+  ISK = "ISK",
+  JEP = "JEP",
+  JMD = "JMD",
+  JOD = "JOD",
+  JPY = "JPY",
+  KES = "KES",
+  KGS = "KGS",
+  KHR = "KHR",
+  KID = "KID",
+  KMF = "KMF",
+  KRW = "KRW",
+  KWD = "KWD",
+  KYD = "KYD",
+  KZT = "KZT",
+  LAK = "LAK",
+  LBP = "LBP",
+  LKR = "LKR",
+  LRD = "LRD",
+  LSL = "LSL",
+  LYD = "LYD",
+  MAD = "MAD",
+  MDL = "MDL",
+  MGA = "MGA",
+  MKD = "MKD",
+  MMK = "MMK",
+  MNT = "MNT",
+  MOP = "MOP",
+  MRU = "MRU",
+  MUR = "MUR",
+  MVR = "MVR",
+  MWK = "MWK",
+  MXN = "MXN",
+  MYR = "MYR",
+  MZN = "MZN",
+  NAD = "NAD",
+  NGN = "NGN",
+  NIO = "NIO",
+  NOK = "NOK",
+  NPR = "NPR",
+  NZD = "NZD",
+  OMR = "OMR",
+  PAB = "PAB",
+  PEN = "PEN",
+  PGK = "PGK",
+  PHP = "PHP",
+  PKR = "PKR",
+  PLN = "PLN",
+  PYG = "PYG",
+  QAR = "QAR",
+  RON = "RON",
+  RSD = "RSD",
+  RUB = "RUB",
+  RWF = "RWF",
+  SAR = "SAR",
+  SBD = "SBD",
+  SCR = "SCR",
+  SDG = "SDG",
+  SEK = "SEK",
+  SGD = "SGD",
+  SHP = "SHP",
+  SLE = "SLE",
+  SLL = "SLL",
+  SOS = "SOS",
+  SRD = "SRD",
+  SSP = "SSP",
+  STN = "STN",
+  SYP = "SYP",
+  SZL = "SZL",
+  THB = "THB",
+  TJS = "TJS",
+  TMT = "TMT",
+  TND = "TND",
+  TOP = "TOP",
+  TRY = "TRY",
+  TTD = "TTD",
+  TVD = "TVD",
+  TWD = "TWD",
+  TZS = "TZS",
+  UAH = "UAH",
+  UGX = "UGX",
+  USD = "USD",
+  UYU = "UYU",
+  UZS = "UZS",
+  VES = "VES",
+  VND = "VND",
+  VUV = "VUV",
+  WST = "WST",
+  XAF = "XAF",
+  XCD = "XCD",
+  XCG = "XCG",
+  XDR = "XDR",
+  XOF = "XOF",
+  XPF = "XPF",
+  YER = "YER",
+  ZAR = "ZAR",
+  ZMW = "ZMW",
+  ZWL = "ZWL",
+}
+
 export interface Quotes {
   updateAt: string;
   result: string;
@@ -10,169 +176,5 @@ export interface Quotes {
   time_next_update_utc: string;
   time_eol_unix: 0;
   base_code: "BRL";
-  rates: {
-    BRL: number;
-    AED: number;
-    AFN: number;
-    ALL: number;
-    AMD: number;
-    ANG: number;
-    AOA: number;
-    ARS: number;
-    AUD: number;
-    AWG: number;
-    AZN: number;
-    BAM: number;
-    BBD: number;
-    BDT: number;
-    BGN: number;
-    BHD: number;
-    BIF: number;
-    BMD: number;
-    BND: number;
-    BOB: number;
-    BSD: number;
-    BTN: number;
-    BWP: number;
-    BYN: number;
-    BZD: number;
-    CAD: number;
-    CDF: number;
-    CHF: number;
-    CLP: number;
-    CNY: number;
-    COP: number;
-    CRC: number;
-    CUP: number;
-    CVE: number;
-    CZK: number;
-    DJF: number;
-    DKK: number;
-    DOP: number;
-    DZD: number;
-    EGP: number;
-    ERN: number;
-    ETB: number;
-    EUR: number;
-    FJD: number;
-    FKP: number;
-    FOK: number;
-    GBP: number;
-    GEL: number;
-    GGP: number;
-    GHS: number;
-    GIP: number;
-    GMD: number;
-    GNF: number;
-    GTQ: number;
-    GYD: number;
-    HKD: number;
-    HNL: number;
-    HRK: number;
-    HTG: number;
-    HUF: number;
-    IDR: number;
-    ILS: number;
-    IMP: number;
-    INR: number;
-    IQD: number;
-    IRR: number;
-    ISK: number;
-    JEP: number;
-    JMD: number;
-    JOD: number;
-    JPY: number;
-    KES: number;
-    KGS: number;
-    KHR: number;
-    KID: number;
-    KMF: number;
-    KRW: number;
-    KWD: number;
-    KYD: number;
-    KZT: number;
-    LAK: number;
-    LBP: number;
-    LKR: number;
-    LRD: number;
-    LSL: number;
-    LYD: number;
-    MAD: number;
-    MDL: number;
-    MGA: number;
-    MKD: number;
-    MMK: number;
-    MNT: number;
-    MOP: number;
-    MRU: number;
-    MUR: number;
-    MVR: number;
-    MWK: number;
-    MXN: number;
-    MYR: number;
-    MZN: number;
-    NAD: number;
-    NGN: number;
-    NIO: number;
-    NOK: number;
-    NPR: number;
-    NZD: number;
-    OMR: number;
-    PAB: number;
-    PEN: number;
-    PGK: number;
-    PHP: number;
-    PKR: number;
-    PLN: number;
-    PYG: number;
-    QAR: number;
-    RON: number;
-    RSD: number;
-    RUB: number;
-    RWF: number;
-    SAR: number;
-    SBD: number;
-    SCR: number;
-    SDG: number;
-    SEK: number;
-    SGD: number;
-    SHP: number;
-    SLE: number;
-    SLL: number;
-    SOS: number;
-    SRD: number;
-    SSP: number;
-    STN: number;
-    SYP: number;
-    SZL: number;
-    THB: number;
-    TJS: number;
-    TMT: number;
-    TND: number;
-    TOP: number;
-    TRY: number;
-    TTD: number;
-    TVD: number;
-    TWD: number;
-    TZS: number;
-    UAH: number;
-    UGX: number;
-    USD: number;
-    UYU: number;
-    UZS: number;
-    VES: number;
-    VND: number;
-    VUV: number;
-    WST: number;
-    XAF: number;
-    XCD: number;
-    XCG: number;
-    XDR: number;
-    XOF: number;
-    XPF: number;
-    YER: number;
-    ZAR: number;
-    ZMW: number;
-    ZWL: number;
-  };
+  rates: Record<QuotesCurrencies, number>;
 }

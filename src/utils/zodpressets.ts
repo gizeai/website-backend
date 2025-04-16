@@ -1,5 +1,6 @@
 import { z } from "zod";
 import i18next from "@/utils/i18n";
+import { Currencys } from "@/types/quotes";
 
 const zodpressets = {
   password: z
@@ -12,6 +13,8 @@ const zodpressets = {
     .string()
     .email(i18next.t("validators.invalid_email"))
     .transform(email => email.trim().toLowerCase()),
+  plan: z.enum(["flash", "creator", "influencer", "viral"]),
+  currency: z.enum(Object.values(Currencys) as [string, ...string[]]),
 };
 
 export default zodpressets;

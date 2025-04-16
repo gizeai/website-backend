@@ -1,5 +1,7 @@
 import { PlansNamesTypes } from "@/constants/PLANS";
 import Cart, { recurrencesType } from "@/managers/Cart";
+import { Quotes } from "@/types/quotes";
+import getQuotes from "@/utils/getQuotes";
 import prisma from "@/utils/prisma";
 import { Enterprise, User } from "@prisma/client";
 import { TFunction } from "i18next";
@@ -7,16 +9,23 @@ import { TFunction } from "i18next";
 type Translaction = TFunction<"translation", undefined>;
 
 const InvoiceService = {
-  create: async (enterprise: Enterprise, plan: PlansNamesTypes, recurrence: recurrencesType) => {
+  create: async (
+    enterprise: Enterprise,
+    plan: PlansNamesTypes,
+    recurrence: recurrencesType,
+    currency: keyof Quotes["rates"]
+  ) => {
     const price = Cart.getPrice(plan, recurrence);
+    const quotes = await getQuotes();
 
     const invoice = await prisma.invoice.create({
       data: {
         enterpriseId: enterprise.id,
-        value: price,
+        value: price * (quotes?.rates[currency] ?? 1),
         enterpriseName: enterprise.name,
         expireAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
         status: "PENDING",
+        currency: currency,
       },
     });
 

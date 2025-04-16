@@ -29,7 +29,7 @@ export default async function getQuotes() {
   try {
     const response = await axios.get("https://open.er-api.com/v6/latest/BRL");
 
-    const data = {
+    const data: Quotes = {
       updateAt: new Date().toISOString(),
       ...response.data,
     };
@@ -38,6 +38,7 @@ export default async function getQuotes() {
     return data;
   } catch (error) {
     logger.error(error);
+    const quotes = await getQuotesFromCache(true);
     return quotes;
   }
 }

@@ -7,6 +7,7 @@ const PLANS = {
     price: 9.9,
     users: 2,
     credits: 5,
+    database_key: "FLASH",
     stripe_product_id: "product_dawidjawoidjaowidj",
   },
   creator: {
@@ -14,6 +15,7 @@ const PLANS = {
     price: 25,
     users: 5,
     credits: 15,
+    database_key: "CREATOR",
     stripe_product_id: "product_dawidjawoidjaowidj",
   },
   influencer: {
@@ -21,6 +23,7 @@ const PLANS = {
     price: 59,
     users: 10,
     credits: 40,
+    database_key: "INFLUENCER",
     stripe_product_id: "product_dawidjawoidjaowidj",
   },
   viral: {
@@ -28,6 +31,7 @@ const PLANS = {
     price: 139,
     users: 25,
     credits: 100,
+    database_key: "VIRAL",
     stripe_product_id: "product_dawidjawoidjaowidj",
   },
 };

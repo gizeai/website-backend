@@ -2,10 +2,11 @@ import PLANS, { PlansNamesTypes } from "@/constants/PLANS";
 import { Quotes } from "@/types/quotes";
 import generateMercadoPagoPaymentLink from "@/utils/generateMercadoPagoPaymentLink";
 import generateStripePaymentLink from "@/utils/generateStripePaymentLink";
+import getQuotes from "@/utils/getQuotes";
 import logger from "@/utils/logger";
 import prisma from "@/utils/prisma";
 
-type paymentsType = "stripe" | "mercadopago";
+export type paymentsType = "stripe" | "mercadopago";
 export type recurrencesType = "month" | "year";
 
 type Products = {
@@ -63,10 +64,13 @@ export default class Cart {
   async link(currency: keyof Quotes["rates"]): Promise<Return> {
     try {
       if (this.paymentType === "mercadopago") {
+        const quotes = await getQuotes();
+
         const items = this.products.map(product => ({
           id: product.enterpriseId,
           title: `${product.plan} - ${product.recurrence}`,
-          unit_price: Cart.getPrice(product.plan, product.recurrence),
+          unit_price:
+            Cart.getPrice(product.plan, product.recurrence) * (quotes?.rates[currency] ?? 1),
           quantity: 1,
           currency_id: currency,
         }));
@@ -91,8 +95,10 @@ export default class Cart {
           error: "Error generating MercadoPago link.",
         };
       } else if (this.paymentType === "stripe") {
+        const quotes = await getQuotes();
         const items = this.products.map(product => ({
-          unit_amount: Cart.getPrice(product.plan, product.recurrence) * 100,
+          unit_amount:
+            Cart.getPrice(product.plan, product.recurrence) * (quotes?.rates[currency] ?? 1) * 100,
           product: PLANS[product.plan].stripe_product_id,
           currency: currency.toLowerCase(),
         }));

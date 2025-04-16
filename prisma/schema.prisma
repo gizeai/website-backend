@@ -93,6 +93,7 @@ model Enterprise {
   font        String   @default("inter")
   language    String   @default("pt")
   keywords    String[]
+  active      Boolean  @default(false)
   infos       String   @db.Text
   personality String   @db.Text
   credits     Int
@@ -166,6 +167,7 @@ model Invoice {
   enterpriseName String        @map("enterprise_name")
   status         InvoiceStatus
   value          Int
+  currency       String
   discount       Int           @default(0)
 
   paidAt     DateTime? @map("paid_at")
@@ -173,6 +175,9 @@ model Invoice {
   paidValue  Int?      @map("paid_value")
   paidCoupon String?   @map("paid_coupon")
   paidBy     String?   @map("paid_by")
+
+  paymentUrl       String?   @map("payment_url")
+  paymentUrlExpire DateTime? @map("payment_url_expire")
 
   expireAt  DateTime @map("expire_at")
   createdAt DateTime @default(now()) @map("created_at")
