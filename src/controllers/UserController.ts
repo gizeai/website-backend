@@ -8,7 +8,7 @@ const UserController = {
   create: async (req: Request, res: Response) => {
     try {
       const result = await UserService.create(
-        req,
+        req.t,
         req.body.name,
         req.body.email,
         req.body.password
@@ -29,7 +29,7 @@ const UserController = {
   //VERIFY USER
   verify: async (req: Request, res: Response) => {
     try {
-      const result = await UserService.verify(req, req.body.email, req.body.code);
+      const result = await UserService.verify(req.t, req.body.email, req.body.code);
 
       if (!result.success) {
         res.status(result.status).json(result.data);
@@ -46,7 +46,7 @@ const UserController = {
   //LOGIN USER
   login: async (req: Request, res: Response) => {
     try {
-      const result = await UserService.login(req, req.body.email, req.body.password);
+      const result = await UserService.login(req, req.t, req.body.email, req.body.password);
 
       if (!result.success) {
         res.status(result.status).json(result.data);
@@ -83,7 +83,7 @@ const UserController = {
   // REEDEM USER
   reedem: async (req: Request, res: Response) => {
     try {
-      const result = await UserService.reedem(req, req.body.email);
+      const result = await UserService.reedem(req.t, req.body.email);
 
       if (!result.success) {
         res.status(result.status).json(result.data);
@@ -101,7 +101,7 @@ const UserController = {
   reedemCode: async (req: Request, res: Response) => {
     try {
       const code = req.params.code;
-      const result = await UserService.reedemCode(req, req.body.email, code, req.body.password);
+      const result = await UserService.reedemCode(req.t, req.body.email, code, req.body.password);
 
       if (!result.success) {
         res.status(result.status).json(result.data);
@@ -141,7 +141,7 @@ const UserController = {
       const userName = req.body.name as string | undefined;
       const password = req.body.password as string | undefined;
 
-      const result = await UserService.edit(req, userId, userName, password, upload);
+      const result = await UserService.edit(req.t, userId, userName, password, upload);
 
       if (!result.success) {
         res.status(result.status).json(result.data);

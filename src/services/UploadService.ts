@@ -1,14 +1,15 @@
 import prisma from "@/utils/prisma";
 import { User } from "@prisma/client";
-import { Request, Express } from "express";
 import * as fs from "fs";
+import { TFunction } from "i18next";
+
+type Translaction = TFunction<"translation", undefined>;
 
 const UploadService = {
-  upload: async (req: Request, file: Express.Multer.File) => {
+  upload: async (user: User | undefined, file: Express.Multer.File) => {
     let userid = "";
 
-    if (req.user) {
-      const user = req.user as User;
+    if (user) {
       userid = user.id;
     }
 
@@ -26,7 +27,7 @@ const UploadService = {
     return upload;
   },
 
-  get: async (req: Request, id: string) => {
+  get: async (t: Translaction, id: string) => {
     const upload = await prisma.upload.findUnique({
       where: {
         id: id,
@@ -37,7 +38,7 @@ const UploadService = {
       return {
         success: false,
         status: 404,
-        data: { error: req.t("upload.file_not_found") },
+        data: { error: t("upload.file_not_found") },
       };
     }
 
@@ -55,7 +56,7 @@ const UploadService = {
     };
   },
 
-  delete: async (req: Request, id: string) => {
+  delete: async (t: Translaction, user: User | undefined, id: string) => {
     const upload = await prisma.upload.findUnique({
       where: {
         id: id,
@@ -66,15 +67,15 @@ const UploadService = {
       return {
         success: false,
         status: 404,
-        data: { error: req.t("upload.file_not_found") },
+        data: { error: t("upload.file_not_found") },
       };
     }
 
-    if (upload.userId !== (req.user as User | undefined)?.id) {
+    if (upload.userId !== (user as User | undefined)?.id) {
       return {
         success: false,
         status: 403,
-        data: { error: req.t("general_erros.not_permission_to_action") },
+        data: { error: t("general_erros.not_permission_to_action") },
       };
     }
 

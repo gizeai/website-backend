@@ -31,4 +31,8 @@ export const translation = {
   upload: {
     file_not_found: "Arquivo nao encontrado",
   },
+  invoice: {
+    not_found: "Invoice nao encontrada",
+    not_enterprise: "Empresa vinculada a fatura não encontrada",
+  },
 } as const;

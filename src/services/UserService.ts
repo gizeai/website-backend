@@ -8,9 +8,12 @@ import JsonWebToken from "@/managers/JsonWebToken";
 import logger from "@/utils/logger";
 import { Upload, User } from "@prisma/client";
 import mounthUploadURL from "@/utils/mounthUploadURL";
+import { TFunction } from "i18next";
+
+type Translaction = TFunction<"translation", undefined>;
 
 const UserService = {
-  create: async (req: Request, name: string, email: string, password: string) => {
+  create: async (t: Translaction, name: string, email: string, password: string) => {
     const hashPassword = PasswordManager.hashPassword(password);
     const randomCode = Math.random().toString(36).slice(2, 8).toUpperCase();
 
@@ -23,7 +26,7 @@ const UserService = {
         return {
           success: false,
           status: 409,
-          data: { error: req.t("user.email_exists") },
+          data: { error: t("user.email_exists") },
         };
       }
 
@@ -37,12 +40,12 @@ const UserService = {
       code: randomCode,
     });
 
-    await mailer.send("account", req.body.email, "Verify your account", template, true);
+    await mailer.send("account", email, "Verify your account", template, true);
 
     await prisma.user.create({
       data: {
         name: name,
-        email: req.body.email,
+        email: email,
         signUpId: uuid(),
         password: hashPassword,
         verificationCode: randomCode,
@@ -57,7 +60,7 @@ const UserService = {
     };
   },
 
-  verify: async (req: Request, email: string, code: string) => {
+  verify: async (t: Translaction, email: string, code: string) => {
     const user = await prisma.user.findFirst({
       where: { email: email },
     });
@@ -66,7 +69,7 @@ const UserService = {
       return {
         success: false,
         status: 404,
-        data: { error: req.t("user.user_not_found") },
+        data: { error: t("user.user_not_found") },
       };
     }
 
@@ -74,7 +77,7 @@ const UserService = {
       return {
         success: false,
         status: 400,
-        data: { error: req.t("user.already_verified") },
+        data: { error: t("user.already_verified") },
       };
     }
 
@@ -82,7 +85,7 @@ const UserService = {
       return {
         success: false,
         status: 400,
-        data: { error: req.t("user.invalid_code") },
+        data: { error: t("user.invalid_code") },
       };
     }
 
@@ -108,7 +111,7 @@ const UserService = {
     };
   },
 
-  login: async (req: Request, email: string, password: string) => {
+  login: async (req: Request, t: Translaction, email: string, password: string) => {
     const user = await prisma.user.findFirst({
       where: { email: email },
     });
@@ -117,7 +120,7 @@ const UserService = {
       return {
         success: false,
         status: 404,
-        data: { error: req.t("user.user_not_found") },
+        data: { error: t("user.user_not_found") },
       };
     }
 
@@ -125,7 +128,7 @@ const UserService = {
       return {
         success: false,
         status: 400,
-        data: { error: req.t("user.not_verified") },
+        data: { error: t("user.not_verified") },
       };
     }
 
@@ -133,7 +136,7 @@ const UserService = {
       return {
         success: false,
         status: 400,
-        data: { error: req.t("user.invalid_password") },
+        data: { error: t("user.invalid_password") },
       };
     }
 
@@ -186,13 +189,13 @@ const UserService = {
     };
   },
 
-  authenticate: async (req: Request, token: string) => {
+  authenticate: async (t: Translaction, token: string) => {
     const decode = JsonWebToken.decodeUser(token);
     if (!decode) {
       return {
         success: false,
         status: 404,
-        data: { error: req.t("user.invalid_token") },
+        data: { error: t("user.invalid_token") },
       };
     }
 
@@ -205,7 +208,7 @@ const UserService = {
       return {
         success: false,
         status: 404,
-        data: { error: req.t("user.not_user_with_token") },
+        data: { error: t("user.not_user_with_token") },
       };
     }
 
@@ -213,7 +216,7 @@ const UserService = {
       return {
         success: false,
         status: 404,
-        data: { error: req.t("user.invalid_token") },
+        data: { error: t("user.invalid_token") },
       };
     }
 
@@ -251,7 +254,7 @@ const UserService = {
     };
   },
 
-  reedem: async (req: Request, email: string) => {
+  reedem: async (t: Translaction, email: string) => {
     const user = await prisma.user.findFirst({
       where: { email: email },
     });
@@ -260,7 +263,7 @@ const UserService = {
       return {
         success: false,
         status: 404,
-        data: { error: req.t("user.user_not_found_with_email") },
+        data: { error: t("user.user_not_found_with_email") },
       };
     }
 
@@ -303,7 +306,7 @@ const UserService = {
     };
   },
 
-  reedemCode: async (req: Request, email: string, code: string, password: string) => {
+  reedemCode: async (t: Translaction, email: string, code: string, password: string) => {
     const user = await prisma.user.findFirst({
       where: { email: email },
       select: { id: true, name: true },
@@ -313,7 +316,7 @@ const UserService = {
       return {
         success: false,
         status: 404,
-        data: { error: req.t("user.user_not_found_with_email") },
+        data: { error: t("user.user_not_found_with_email") },
       };
     }
 
@@ -325,7 +328,7 @@ const UserService = {
       return {
         success: false,
         status: 404,
-        data: { error: req.t("user.code_not_found") },
+        data: { error: t("user.code_not_found") },
       };
     }
 
@@ -396,7 +399,7 @@ const UserService = {
   },
 
   edit: async (
-    _req: Request,
+    _t: Translaction,
     user: User,
     name: string | undefined,
     password: string | undefined,

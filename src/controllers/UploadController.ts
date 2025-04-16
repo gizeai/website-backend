@@ -1,5 +1,6 @@
 import UploadService from "@/services/UploadService";
 import logger from "@/utils/logger";
+import { User } from "@prisma/client";
 import { Request, Response } from "express";
 
 const UploadController = {
@@ -9,7 +10,7 @@ const UploadController = {
       const id = req.params.id;
       const download = req.query.download;
 
-      const result = await UploadService.get(req, id);
+      const result = await UploadService.get(req.t, id);
 
       if (!result.success) {
         res.status(result.status).json(result.data);
@@ -41,7 +42,7 @@ const UploadController = {
     try {
       const id = req.params.id;
 
-      const result = await UploadService.delete(req, id);
+      const result = await UploadService.delete(req.t, req.user as User, id);
 
       if (!result.success) {
         res.status(result.status).json(result.data);
