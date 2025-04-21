@@ -1,5 +1,6 @@
 import UploadService from "@/services/UploadService";
 import logger from "@/utils/logger";
+import { User } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
 import path from "path";
@@ -40,7 +41,7 @@ function upload(formname: string, uploadLimitInMb = 3) {
       }
 
       try {
-        const upload = await UploadService.upload(req, req.file);
+        const upload = await UploadService.upload((req.user as User) ?? undefined, req.file);
         req.upload = upload;
         next();
       } catch (error) {

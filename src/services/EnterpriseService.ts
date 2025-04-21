@@ -12,7 +12,7 @@ const EnterpriseService = {
         name: name,
         plan: PLANS[plan].database_key as Plan,
         credits: 0,
-        expireAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+        expireAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5),
         infos: "",
         personality: "",
         active: false,

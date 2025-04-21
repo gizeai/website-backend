@@ -78,7 +78,7 @@ describe("GET /user/auth", () => {
     const res = await axiosBase.get("/user/auth", {
       headers: {
         Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIzNzdiNmNmLWNkZDctNGE3Ni05NmMwLTc3MjEwNGM0MTZjOCIsImVtYWlsIjoia2F1YWNvbXRpbDAyMUBnbWFpbC5jb20iLCJuYW1lIjoiS2F1YSBCcmF6IiwiaWF0IjoxNzQ0Mzk5MzYyLCJleHAiOjE3NTIxNzUzNjJ9.UziZ6GPYzPEX_kX4FTAGBFVmqQIQm7rni3vZ3nqUA0k",
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNlN2RjMWQ1LTAwNDMtNGE2MC1iMjA2LTljYzYyZTk2NjRmMiIsImVtYWlsIjoia2F1YWNvbXRpbDAyMUBnbWFpbC5jb20iLCJuYW1lIjoiS2F1YSBCcmF6IiwiaWF0IjoxNzQ1Mjc3NjcxLCJleHAiOjE3NTMwNTM2NzF9.PaTwJ3_ww4QKBbjH9dq7R7aLbVEpd84OVwkBb72o5mk",
       },
     });
 
@@ -158,7 +158,7 @@ describe("POST /user/invoices", () => {
     const res = await axiosBase.get("/user/invoices", {
       headers: {
         Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIzNzdiNmNmLWNkZDctNGE3Ni05NmMwLTc3MjEwNGM0MTZjOCIsImVtYWlsIjoia2F1YWNvbXRpbDAyMUBnbWFpbC5jb20iLCJuYW1lIjoiS2F1YSBCcmF6IiwiaWF0IjoxNzQ0Mzk5MzYyLCJleHAiOjE3NTIxNzUzNjJ9.UziZ6GPYzPEX_kX4FTAGBFVmqQIQm7rni3vZ3nqUA0k",
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNlN2RjMWQ1LTAwNDMtNGE2MC1iMjA2LTljYzYyZTk2NjRmMiIsImVtYWlsIjoia2F1YWNvbXRpbDAyMUBnbWFpbC5jb20iLCJuYW1lIjoiS2F1YSBCcmF6IiwiaWF0IjoxNzQ1Mjc3NjcxLCJleHAiOjE3NTMwNTM2NzF9.PaTwJ3_ww4QKBbjH9dq7R7aLbVEpd84OVwkBb72o5mk",
       },
     });
 
@@ -175,7 +175,7 @@ describe("POST /user/edit", () => {
     const res = await axiosBase.put("/user/edit", formdata, {
       headers: {
         Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIzNzdiNmNmLWNkZDctNGE3Ni05NmMwLTc3MjEwNGM0MTZjOCIsImVtYWlsIjoia2F1YWNvbXRpbDAyMUBnbWFpbC5jb20iLCJuYW1lIjoiS2F1YSBCcmF6IiwiaWF0IjoxNzQ0Mzk5MzYyLCJleHAiOjE3NTIxNzUzNjJ9.UziZ6GPYzPEX_kX4FTAGBFVmqQIQm7rni3vZ3nqUA0k",
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNlN2RjMWQ1LTAwNDMtNGE2MC1iMjA2LTljYzYyZTk2NjRmMiIsImVtYWlsIjoia2F1YWNvbXRpbDAyMUBnbWFpbC5jb20iLCJuYW1lIjoiS2F1YSBCcmF6IiwiaWF0IjoxNzQ1Mjc3NjcxLCJleHAiOjE3NTMwNTM2NzF9.PaTwJ3_ww4QKBbjH9dq7R7aLbVEpd84OVwkBb72o5mk",
       },
     });
 

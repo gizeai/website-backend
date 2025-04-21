@@ -23,7 +23,7 @@ const InvoiceService = {
         enterpriseId: enterprise.id,
         value: price * (quotes?.rates[currency] ?? 1),
         enterpriseName: enterprise.name,
-        expireAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+        expireAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5),
         status: "PENDING",
         currency: currency,
       },

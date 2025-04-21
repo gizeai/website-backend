@@ -11,7 +11,7 @@ export default function authentication() {
       return;
     }
 
-    const result = await UserService.authenticate(req, auth_token);
+    const result = await UserService.authenticate(req.t, auth_token);
 
     if (!result.success) {
       res.status(result.status).json(result.data);

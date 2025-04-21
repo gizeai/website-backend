@@ -176,5 +176,5 @@ export interface Quotes {
   time_next_update_utc: string;
   time_eol_unix: 0;
   base_code: "BRL";
-  rates: Record<QuotesCurrencies, number>;
+  rates: Record<Currencys, number>;
 }
