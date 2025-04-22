@@ -1,10 +1,10 @@
 import PLANS, { PlansNamesTypes } from "@/constants/PLANS";
 import { Quotes } from "@/types/quotes";
-import generateMercadoPagoPaymentLink from "@/utils/generateMercadoPagoPaymentLink";
-import generateStripePaymentLink from "@/utils/generateStripePaymentLink";
 import getQuotes from "@/utils/getQuotes";
 import logger from "@/utils/logger";
 import prisma from "@/utils/prisma";
+import MercadoPagoManager from "./MercadoPagoManager";
+import StripeManager from "./StripeManager";
 
 export type paymentsType = "stripe" | "mercadopago";
 export type recurrencesType = "month" | "year";
@@ -81,7 +81,7 @@ export default class Cart {
           },
         });
 
-        const link = await generateMercadoPagoPaymentLink(items, invoicepack.id);
+        const link = await MercadoPagoManager.getLink(items, invoicepack.id);
 
         if (link) {
           return {
@@ -109,7 +109,7 @@ export default class Cart {
           },
         });
 
-        const link = await generateStripePaymentLink(items, invoicepack.id);
+        const link = await StripeManager.getLink(items, invoicepack.id);
 
         if (link) {
           return {

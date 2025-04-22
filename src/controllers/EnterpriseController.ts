@@ -23,17 +23,32 @@ const EnterpriseController = {
         return;
       }
 
-      const invoice = await InvoiceService.create(enterprise.data, plan, recurrence, currency);
+      const shortcutDeleteEnteprise = async () => {
+        await EnterpriseService.delete(req.t, req.user as User, enterprise.data.id);
+      };
 
-      if (!invoice.success) {
-        //TODO: Deletar a empresa criada (faça isso quando a função estiver pronta)
-        res.status(invoice.status).json(invoice.data);
-        return;
+      try {
+        const invoice = await InvoiceService.create(
+          enterprise.data,
+          plan,
+          recurrence,
+          currency,
+          "ENTERPRISE_CREATE"
+        );
+
+        if (!invoice.success) {
+          await shortcutDeleteEnteprise();
+          res.status(invoice.status).json(invoice.data);
+          return;
+        }
+
+        res.status(201).json({
+          invoice: invoice.data.id,
+        });
+      } catch (error) {
+        await shortcutDeleteEnteprise();
+        throw error;
       }
-
-      res.status(201).json({
-        invoice: invoice.data.id,
-      });
     } catch (error) {
       logger.error(error);
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });

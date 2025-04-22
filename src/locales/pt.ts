@@ -14,6 +14,7 @@ export const translation = {
     file_not_send: "O arquivo não foi enviado.",
     file_too_large: "O arquivo enviado é muito grande.",
     not_permission_to_action: "Você não tem permissão para executar essa ação.",
+    invalid_signature: "Assinatura inválida",
   },
   user: {
     email_exists: "E-mail já cadastrado",
@@ -34,5 +35,8 @@ export const translation = {
   invoice: {
     not_found: "Invoice nao encontrada",
     not_enterprise: "Empresa vinculada a fatura não encontrada",
+  },
+  enterprise: {
+    not_found: "Empresa não encontrada",
   },
 } as const;

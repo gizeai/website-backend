@@ -1,5 +1,8 @@
 import "dotenv/config";
 import "@/utils/createDirs";
+
+//TODO: Criar um inport aqui para validar as ENVS antes de iniciar o servidor
+
 import app from "./app";
 
 const port = process.env.EXPRESS_PORT || 3000;

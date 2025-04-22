@@ -37,6 +37,17 @@ enum PostType {
   CARROUSEL
 }
 
+enum InvoiceAction {
+  ENTERPRISE_CREATE
+  ENTERPRISE_RENEW
+  PLAN_UPGRADE
+}
+
+enum Recurrence {
+  MONTHLY
+  YEARLY
+}
+
 model User {
   id               String      @id @default(uuid())
   signUpId         String      @unique @map("sign_up_id")
@@ -104,9 +115,10 @@ model Enterprise {
   logs     Log[]
   subusers Subuser[]
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updateAt  DateTime @updatedAt @map("update_at")
-  expireAt  DateTime @map("expire_at")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updateAt          DateTime @updatedAt @map("update_at")
+  expireAt          DateTime @map("expire_at")
+  lastCreditsUpdate DateTime @map("last_credits_update")
 
   @@map("enterprises")
 }
@@ -166,13 +178,16 @@ model Invoice {
   enterpriseId   String        @map("enterprise_id")
   enterpriseName String        @map("enterprise_name")
   status         InvoiceStatus
-  value          Int
+  action         InvoiceAction
+  recurrence     Recurrence
+  plan           Plan
+  value          Float
   currency       String
   discount       Int           @default(0)
 
   paidAt     DateTime? @map("paid_at")
   paidWith   String?   @map("paid_with")
-  paidValue  Int?      @map("paid_value")
+  paidValue  Float?    @map("paid_value")
   paidCoupon String?   @map("paid_coupon")
   paidBy     String?   @map("paid_by")
 
