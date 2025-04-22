@@ -54,6 +54,8 @@ describe("POST /enterprise/create and GET /enterprise", () => {
     expect(data.length).toBe(0);
   })
 
+  let enterpriseId: string | null = null;
+
   it("should GET /enterprise?unactiveEnterprise=true return 200", async () => {
     const res = await axiosBase.get("/enterprise?unactiveEnterprise=true",{
       headers: {
@@ -69,6 +71,8 @@ describe("POST /enterprise/create and GET /enterprise", () => {
     expect(data.length).toBeGreaterThan(0);
 
     const enterprise = data[0];
+
+    enterpriseId = enterprise.id
 
     expect(typeof enterprise.id).toBe("string");
     expect(typeof enterprise.name).toBe("string");
@@ -118,4 +122,31 @@ describe("POST /enterprise/create and GET /enterprise", () => {
     expect(typeof invoice.expireAt).toBe("string");
     expect(typeof invoice.createdAt).toBe("string");
   });
+
+  it("should /enterprise/:id/edit return 200", async () => {
+    const res = await axiosBase.put(`/enterprise/${enterpriseId}/edit`, {
+      name: "Novo nome"
+    }, {
+      headers: {
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNlN2RjMWQ1LTAwNDMtNGE2MC1iMjA2LTljYzYyZTk2NjRmMiIsImVtYWlsIjoia2F1YWNvbXRpbDAyMUBnbWFpbC5jb20iLCJuYW1lIjoiS2F1YSBCcmF6IiwiaWF0IjoxNzQ1Mjc3NjcxLCJleHAiOjE3NTMwNTM2NzF9.PaTwJ3_ww4QKBbjH9dq7R7aLbVEpd84OVwkBb72o5mk",
+      },
+    })
+
+    expect(res.status).toBe(200);
+    expect(res.data.update).toBe(true);
+  })
+
+  it("should /enterprise/:id/edit return 404", async () => {
+    const res = await axiosBase.put(`/enterprise/dawdaiwodjoawid/edit`, {
+      name: "Novo nome"
+    }, {
+      headers: {
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNlN2RjMWQ1LTAwNDMtNGE2MC1iMjA2LTljYzYyZTk2NjRmMiIsImVtYWlsIjoia2F1YWNvbXRpbDAyMUBnbWFpbC5jb20iLCJuYW1lIjoiS2F1YSBCcmF6IiwiaWF0IjoxNzQ1Mjc3NjcxLCJleHAiOjE3NTMwNTM2NzF9.PaTwJ3_ww4QKBbjH9dq7R7aLbVEpd84OVwkBb72o5mk",
+      },
+    })
+
+    expect(res.status).toBe(404);
+  })
 });

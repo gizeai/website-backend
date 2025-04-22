@@ -1,6 +1,7 @@
 import { z } from "zod";
 import i18next from "@/utils/i18n";
 import { Currencys } from "@/types/quotes";
+import { Languages } from "@/types/langs";
 
 const zodpressets = {
   password: z
@@ -15,6 +16,7 @@ const zodpressets = {
     .transform(email => email.trim().toLowerCase()),
   plan: z.enum(["flash", "creator", "influencer", "viral"]),
   currency: z.enum(Object.values(Currencys) as [string, ...string[]]),
+  langs: z.enum(Object.values(Languages) as [string, ...string[]]),
   paymentMethod: z.enum(["stripe", "mercadopago"]),
 };
 

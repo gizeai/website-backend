@@ -38,5 +38,7 @@ export const translation = {
   },
   enterprise: {
     not_found: "Empresa não encontrada",
+    not_active: "A primeira fatura dessa empresa ainda não foi paga",
+    expired: "A fatura da empresa expirou",
   },
 } as const;

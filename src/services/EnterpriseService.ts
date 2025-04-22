@@ -1,4 +1,5 @@
 import PLANS, { PlansNamesTypes } from "@/constants/PLANS";
+import isPermission from "@/utils/isPermission";
 import prisma from "@/utils/prisma";
 import { Enterprise, Plan, User } from "@prisma/client";
 import { TFunction } from "i18next";
@@ -68,7 +69,7 @@ const EnterpriseService = {
     t: Translaction,
     user: User | undefined,
     id: string,
-    edit: Record<K, Enterprise[K]>
+    edit: Record<K, Enterprise[K] | undefined>
   ) => {
     const enterprise = await prisma.enterprise.findUnique({
       where: {
@@ -84,7 +85,7 @@ const EnterpriseService = {
       };
     }
 
-    if (enterprise.userId !== (user as User | undefined)?.id) {
+    if (!user) {
       return {
         success: false,
         status: 403,
@@ -92,14 +93,7 @@ const EnterpriseService = {
       };
     }
 
-    const subuser = await prisma.subuser.findFirst({
-      where: {
-        userId: (user as User | undefined)?.id,
-        enterpriseId: id,
-      },
-    });
-
-    if (!subuser || subuser?.permission !== "ADMINISTRATOR") {
+    if (!(await isPermission(enterprise, user).isAdministrator())) {
       return {
         success: false,
         status: 403,
@@ -154,12 +148,13 @@ const EnterpriseService = {
     };
   },
 
-  get: async (t: Translaction, id: string) => {
+  get: async (t: Translaction, id: string, options?: { full?: boolean; active?: boolean }) => {
     const enterprise = await prisma.enterprise.findUnique({
       where: {
         id: id,
-        active: true,
+        active: options?.active ? true : undefined,
       },
+      include: options?.full ? { logs: true, posts: true, subusers: true } : undefined,
     });
 
     if (!enterprise) {
