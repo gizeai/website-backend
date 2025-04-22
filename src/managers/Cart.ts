@@ -9,7 +9,7 @@ import StripeManager from "./StripeManager";
 export type paymentsType = "stripe" | "mercadopago";
 export type recurrencesType = "month" | "year";
 
-type Products = {
+export type Products = {
   plan: PlansNamesTypes;
   enterpriseId: string;
   recurrence: recurrencesType;
@@ -19,11 +19,13 @@ type Products = {
 interface SuccessReturn {
   success: true;
   link: string;
+  status: number;
 }
 
 interface ErrorReturn {
   success: false;
   error: string;
+  status: number;
 }
 
 type Return = SuccessReturn | ErrorReturn;
@@ -86,12 +88,14 @@ export default class Cart {
         if (link) {
           return {
             success: true,
+            status: 200,
             link,
           };
         }
 
         return {
           success: false,
+          status: 500,
           error: "Error generating MercadoPago link.",
         };
       } else if (this.paymentType === "stripe") {
@@ -114,12 +118,14 @@ export default class Cart {
         if (link) {
           return {
             success: true,
+            status: 200,
             link,
           };
         }
 
         return {
           success: false,
+          status: 500,
           error: "Error generating Stripe link.",
         };
       } else {
@@ -130,12 +136,14 @@ export default class Cart {
       if (error && typeof error === "object" && "message" in error) {
         return {
           success: false,
+          status: 500,
           error: String(error.message),
         };
       }
 
       return {
         success: false,
+        status: 500,
         error: String(error),
       };
     }

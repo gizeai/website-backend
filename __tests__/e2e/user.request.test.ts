@@ -89,7 +89,7 @@ describe("GET /user/auth", () => {
     expect(typeof data.name).toBe("string");
     expect(typeof data.email).toBe("string");
     expect(typeof data.avatarUrl).toBe("string");
-    expect(data.verificationCode).toBe(true);
+    expect(data.verification).toBe(true);
     expect(typeof data.createdAt).toBe("string");
     expect(typeof data.updateAt).toBe("string");
     expect(typeof data.lastLogin).toBe("string");

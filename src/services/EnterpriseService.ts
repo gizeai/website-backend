@@ -158,6 +158,7 @@ const EnterpriseService = {
     const enterprise = await prisma.enterprise.findUnique({
       where: {
         id: id,
+        active: true,
       },
     });
 
@@ -173,6 +174,50 @@ const EnterpriseService = {
       success: true,
       status: 200,
       data: enterprise,
+    };
+  },
+
+  getAllByUser: async (user: User, options?: { minimal?: boolean; active?: boolean }) => {
+    const minimalWhere = {
+      id: true,
+      name: true,
+      credits: true,
+      active: true,
+      plan: true,
+      _count: {
+        select: {
+          posts: true,
+        },
+      },
+    };
+
+    const enterprises = await prisma.enterprise.findMany({
+      where: {
+        user: { id: user.id },
+        active: options?.active ? true : undefined,
+      },
+      select: options?.minimal ? minimalWhere : undefined,
+    });
+
+    const subusers = await prisma.subuser.findMany({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        enterprise: options?.minimal
+          ? {
+              select: minimalWhere,
+            }
+          : true,
+      },
+    });
+
+    enterprises.push(...subusers.map(subuser => subuser.enterprise));
+
+    return {
+      success: true,
+      status: 200,
+      data: options?.active ? enterprises.filter(enterprise => enterprise.active) : enterprises,
     };
   },
 };

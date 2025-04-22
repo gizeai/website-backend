@@ -229,31 +229,6 @@ const UserService = {
     };
   },
 
-  enterprises: async (userId: string) => {
-    const enterprises = await prisma.enterprise.findMany({
-      where: {
-        user: { id: userId },
-      },
-      select: {
-        id: true,
-        name: true,
-        credits: true,
-        plan: true,
-        _count: {
-          select: {
-            posts: true,
-          },
-        },
-      },
-    });
-
-    return {
-      success: true,
-      status: 200,
-      data: enterprises,
-    };
-  },
-
   reedem: async (t: Translaction, email: string) => {
     const user = await prisma.user.findFirst({
       where: { email: email },
@@ -361,40 +336,6 @@ const UserService = {
       success: true,
       status: 200,
       data: { success: true },
-    };
-  },
-
-  invoices: async (userId: string) => {
-    const enterprises = await prisma.enterprise.findMany({
-      where: {
-        user: { id: userId },
-      },
-    });
-
-    const invoices = await prisma.invoice.findMany({
-      where: {
-        enterpriseId: {
-          in: enterprises.map(enterprise => enterprise.id),
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    const sortInvoices = invoices.sort((a, b) => {
-      if (a.status === "PENDING" && b.status !== "PENDING") return -1;
-      if (a.status === "PAID" && b.status !== "PAID") return -1;
-      if (a.status !== "PENDING" && b.status === "PENDING") return 1;
-      if (a.status !== "PAID" && b.status === "PAID") return 1;
-
-      return 0;
-    });
-
-    return {
-      success: true,
-      status: 200,
-      data: sortInvoices,
     };
   },
 

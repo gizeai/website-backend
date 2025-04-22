@@ -54,6 +54,27 @@ const EnterpriseController = {
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
   },
+
+  //GET ENTERPRISES
+  getAll: async (req: Request, res: Response) => {
+    try {
+      const query = req.query;
+      const enterprises = await EnterpriseService.getAllByUser(req.user as User, {
+        active: query.unactiveEnterprise === "true" ? undefined : true,
+        minimal: true,
+      });
+
+      if (!enterprises.success) {
+        res.status(enterprises.status).json(enterprises.data);
+        return;
+      }
+
+      res.status(200).json(enterprises.data);
+    } catch (error) {
+      logger.error(error);
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+    }
+  },
 };
 
 export default EnterpriseController;

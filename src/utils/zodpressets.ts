@@ -15,6 +15,7 @@ const zodpressets = {
     .transform(email => email.trim().toLowerCase()),
   plan: z.enum(["flash", "creator", "influencer", "viral"]),
   currency: z.enum(Object.values(Currencys) as [string, ...string[]]),
+  paymentMethod: z.enum(["stripe", "mercadopago"]),
 };
 
 export default zodpressets;

@@ -23,6 +23,8 @@ enterpriseRoute.post(
   EnterpriseController.create
 );
 
+enterpriseRoute.get("/", authentication(), EnterpriseController.getAll);
+
 export default {
   path: "/enterprise",
   router: enterpriseRoute,

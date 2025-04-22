@@ -87,6 +87,7 @@ const WebhookController = {
                   plan: invoice.plan,
                   credits: enterpriseData.credits + getPlanByKey(invoice.plan).credits,
                   lastCreditsUpdate: new Date(),
+                  active: true,
                 });
               });
             } else if (
@@ -198,6 +199,7 @@ const WebhookController = {
                     plan: invoice.plan,
                     credits: enterpriseData.credits + getPlanByKey(invoice.plan).credits,
                     lastCreditsUpdate: new Date(),
+                    active: true,
                   });
                 });
               }

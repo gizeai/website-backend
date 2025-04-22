@@ -1,3 +1,5 @@
+import EnterpriseService from "@/services/EnterpriseService";
+import InvoiceService from "@/services/InvoiceService";
 import UserService from "@/services/UserService";
 import logger from "@/utils/logger";
 import { User } from "@prisma/client";
@@ -64,14 +66,17 @@ const UserController = {
   authenticate: async (req: Request, res: Response) => {
     const user = req.user as User;
 
-    const enterprises = await UserService.enterprises(user.id);
+    const enterprises = await EnterpriseService.getAllByUser(user, {
+      active: true,
+      minimal: true,
+    });
 
     res.status(200).json({
       id: user.id,
       name: user.name,
       email: user.email,
       avatarUrl: user.avatarUrl,
-      verificationCode: user.verificationCode === "checked",
+      verification: user.verificationCode === "checked",
       createdAt: user.createdAt,
       updateAt: user.updateAt,
       lastLogin: user.lastLogin,
@@ -118,8 +123,7 @@ const UserController = {
   //INVOICES USER
   invoices: async (req: Request, res: Response) => {
     try {
-      const userId = (req.user as User).id;
-      const result = await UserService.invoices(userId);
+      const result = await InvoiceService.getAllByUser(req.user as User);
 
       if (!result.success) {
         res.status(result.status).json(result.data);

@@ -70,7 +70,7 @@ authRouter.get(
 );
 
 authRouter.get(
-  "/auth/microsoft/callback",
+  "/microsoft/callback",
   passport.authenticate("azuread-openidconnect", {
     failureRedirect: "/",
     session: false,

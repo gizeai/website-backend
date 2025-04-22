@@ -71,21 +71,44 @@ const InvoiceService = {
       select: { id: true },
     });
 
+    const subusers = await prisma.subuser.findMany({
+      where: {
+        userId: user.id,
+        permission: "ADMINISTRATOR",
+      },
+      include: {
+        enterprise: {
+          select: { id: true },
+        },
+      },
+    });
+
     const invoices = await prisma.invoice.findMany({
       where: {
         enterpriseId: {
-          in: enterprises.map(enterprise => enterprise.id),
+          in: [...enterprises, ...subusers.map(subuser => subuser.enterprise)].map(
+            enterprise => enterprise.id
+          ),
         },
       },
       orderBy: {
-        createdAt: "asc",
+        createdAt: "desc",
       },
+    });
+
+    const sortInvoices = invoices.sort((a, b) => {
+      if (a.status === "PENDING" && b.status !== "PENDING") return -1;
+      if (a.status === "PAID" && b.status !== "PAID") return -1;
+      if (a.status !== "PENDING" && b.status === "PENDING") return 1;
+      if (a.status !== "PAID" && b.status === "PAID") return 1;
+
+      return 0;
     });
 
     return {
       success: true,
       status: 200,
-      data: invoices,
+      data: sortInvoices,
     };
   },
 
@@ -258,6 +281,38 @@ const InvoiceService = {
       success: true,
       status: 200,
       data: { canceled: true },
+    };
+  },
+
+  async definePaymentUrl(t: Translaction, invoiceId: string, url: string) {
+    const invoice = await prisma.invoice.findUnique({
+      where: {
+        id: invoiceId,
+      },
+    });
+
+    if (!invoice) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("invoice.not_found") },
+      };
+    }
+
+    await prisma.invoice.update({
+      where: {
+        id: invoiceId,
+      },
+      data: {
+        paymentUrl: url,
+        paymentUrlExpire: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5),
+      },
+    });
+
+    return {
+      success: true,
+      status: 200,
+      data: { update: true },
     };
   },
 };
