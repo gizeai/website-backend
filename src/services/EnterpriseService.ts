@@ -1,5 +1,6 @@
 import PLANS, { PlansNamesTypes } from "@/constants/PLANS";
 import createMailer from "@/emails/email";
+import EnterpriseLogs from "@/managers/EnterpriseLogs";
 import PasswordManager from "@/managers/PasswordManager";
 import isPermission from "@/utils/isPermission";
 import logger from "@/utils/logger";
@@ -275,6 +276,7 @@ const EnterpriseService = {
         id: id,
         active: true,
       },
+      include: { logs: true },
     });
 
     if (!enterprise) {
@@ -341,6 +343,15 @@ const EnterpriseService = {
       };
     }
 
+    const enterpriseLogs = new EnterpriseLogs(enterprise);
+    enterpriseLogs.addLogs({
+      title: "Usuário adicionado",
+      tag: "NEW_SUBUSER",
+      userId: user.id,
+      userName: user.name,
+    });
+    await enterpriseLogs.save();
+
     await prisma.subuser.create({
       data: {
         email: email,
@@ -378,6 +389,7 @@ const EnterpriseService = {
         id: id,
         active: true,
       },
+      include: { logs: true },
     });
 
     if (!enterprise) {
@@ -435,6 +447,15 @@ const EnterpriseService = {
         data: { error: t("enterprise.subuser_not_exists") },
       };
     }
+
+    const enterpriseLogs = new EnterpriseLogs(enterprise);
+    enterpriseLogs.addLogs({
+      title: "Usuário removido",
+      tag: "REMOVE_SUBUSER",
+      userId: user.id,
+      userName: user.name,
+    });
+    await enterpriseLogs.save();
 
     await prisma.subuser.delete({
       where: {
@@ -461,6 +482,7 @@ const EnterpriseService = {
         id: id,
         active: true,
       },
+      include: { logs: true },
     });
 
     if (!enterprise) {
@@ -518,6 +540,15 @@ const EnterpriseService = {
         data: { error: t("enterprise.subuser_not_exists") },
       };
     }
+
+    const enterpriseLogs = new EnterpriseLogs(enterprise);
+    enterpriseLogs.addLogs({
+      title: "Usuário editado",
+      tag: "EDIT_SUBUSER",
+      userId: user.id,
+      userName: user.name,
+    });
+    await enterpriseLogs.save();
 
     await prisma.subuser.update({
       where: {
