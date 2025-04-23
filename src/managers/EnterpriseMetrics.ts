@@ -37,12 +37,7 @@ export default class EnterpriseMetrics {
 
   constructor(enterprise: Enterprise) {
     this.enterprise = enterprise;
-
-    console.log("STRING: ", enterprise.metrics);
-
     const metrics = JSON.parse(enterprise.metrics);
-
-    console.log("JSON: ", metrics);
 
     if (!MetricsSchema.safeParse(metrics).success) {
       throw new Error(`Invalid metrics format on enterprise '${enterprise.id}'`);
@@ -53,6 +48,14 @@ export default class EnterpriseMetrics {
 
   getMetrics() {
     return this.metrics;
+  }
+
+  getMonthMetrics() {
+    const date = new Date();
+    const year = date.getFullYear().toString();
+    const month = getMonthKey(date);
+
+    return this.metrics?.[year]?.[month] ?? [];
   }
 
   setMetrics(metrics: Metrics) {
@@ -81,11 +84,6 @@ export default class EnterpriseMetrics {
       year,
       month,
     };
-  }
-
-  getMonthMetrics() {
-    const { month, year } = this.createMonthKey();
-    return this.metrics?.[year]?.[month] ?? [];
   }
 
   increment(increment: Partial<MetricValues>) {
