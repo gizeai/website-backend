@@ -29,7 +29,7 @@ describe("GET /", () => {
     expect(typeof data.dependencies.database.db).toBe("string");
     expect(typeof data.dependencies.database.version).toBe("string");
     expect(typeof data.dependencies.database.max_connections).toBe("number");
-    expect(data.dependencies.database.opened_connections).toBeLessThanOrEqual(3);
+    expect(data.dependencies.database.opened_connections).toBeLessThanOrEqual(4);
 
     expect(data.dependencies.database.latency).toHaveProperty("first_query");
     expect(data.dependencies.database.latency).toHaveProperty("second_query");

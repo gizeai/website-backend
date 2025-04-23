@@ -7,7 +7,7 @@ const axiosBase = axios.create({
 
 describe("GET /uploads/:id", () => {
   it("should return 200", async () => {
-    const res = await axiosBase.get("/uploads/c337b707-d812-4fb1-8226-47a21d85b4b2");
+    const res = await axiosBase.get("/uploads/15ac6444-6785-4505-8dee-a8f90dbde693");
     expect(res.status).toBe(200);
   });
 });
