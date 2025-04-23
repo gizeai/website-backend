@@ -7,7 +7,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - imaginia_development_db:/data
+      - ./database_data:/var/lib/postgresql/data
   mailhog:
     image: mailhog/mailhog
     container_name: imaginia_mailhog

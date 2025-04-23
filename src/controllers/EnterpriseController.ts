@@ -168,6 +168,23 @@ const EnterpriseController = {
     }
   },
 
+  listSubuser: async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+      const result = await EnterpriseService.listubuser(req.t, req.user as User, id);
+
+      if (!result.success) {
+        res.status(result.status).json(result.data);
+        return;
+      }
+
+      res.status(result.status).json(result.data);
+    } catch (error) {
+      logger.error(error);
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+    }
+  },
+
   addSubuser: async (req: Request, res: Response) => {
     try {
       const id = req.params.id;

@@ -264,6 +264,59 @@ const EnterpriseService = {
     };
   },
 
+  listubuser: async (t: Translaction, user: User | undefined, id: string) => {
+    const enterprise = await prisma.enterprise.findUnique({
+      where: {
+        id: id,
+        active: true,
+      },
+      include: { logs: true },
+    });
+
+    if (!enterprise) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("enterprise.not_found") },
+      };
+    }
+
+    if (!user) {
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.not_permission_to_action") },
+      };
+    }
+
+    if (!(await isPermission(enterprise, user).isAdministrator())) {
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.not_permission_to_action") },
+      };
+    }
+
+    const allSubusers = await prisma.subuser.findMany({
+      where: {
+        enterpriseId: enterprise.id,
+      },
+      select: {
+        email: true,
+        id: true,
+        permission: true,
+        userId: true,
+        userName: true,
+      },
+    });
+
+    return {
+      success: true,
+      status: 201,
+      data: allSubusers,
+    };
+  },
+
   addSubuser: async (
     t: Translaction,
     user: User | undefined,
@@ -355,6 +408,7 @@ const EnterpriseService = {
     await prisma.subuser.create({
       data: {
         email: email,
+        userName: subuserAccount.name,
         permission: userPerm === "USER" ? "USER" : "ADMINISTRATOR",
         userId: subuserAccount.id,
         enterprise: {

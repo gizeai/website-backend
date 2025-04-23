@@ -59,6 +59,9 @@ enterpriseRoute.post(
   EnterpriseController.delete
 );
 
+//GET /api/enterprise/:id/subusers
+enterpriseRoute.post("/:id/subusers", authentication(), EnterpriseController.listSubuser);
+
 //POST /api/enterprise/:id/subuser/create
 const enterpriseSubuserCreateSchema = z.object({
   email: zodpressets.email,
