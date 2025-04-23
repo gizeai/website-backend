@@ -77,7 +77,7 @@ model Session {
   createdAt DateTime @default(now()) @map("created_at")
   signature String
 
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @map("user_id")
 
   @@map("sessions")
@@ -96,7 +96,7 @@ model ReedemPassword {
 model Enterprise {
   id String @id @default(uuid())
 
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @map("user_id")
 
   name        String
@@ -130,7 +130,7 @@ model Log {
   userId   String @map("user_id")
   tag      String
 
-  enterprise   Enterprise? @relation(fields: [enterpriseId], references: [id])
+  enterprise   Enterprise? @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
   enterpriseId String?
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -144,14 +144,14 @@ model Subuser {
   email      String
   permission SubuserPermission
 
-  enterprise   Enterprise @relation(fields: [enterpriseId], references: [id])
+  enterprise   Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
   enterpriseId String     @map("enterprise_id")
 }
 
 model Post {
   id String @id @default(uuid())
 
-  enterprise   Enterprise @relation(fields: [enterpriseId], references: [id])
+  enterprise   Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
   enterpriseId String     @map("enterprise_id")
 
   title              String

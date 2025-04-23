@@ -1,4 +1,5 @@
 import pino from "pino";
+import prisma from "./prisma";
 
 const pinoInstance = pino({
   transport: {
@@ -13,6 +14,7 @@ const pinoInstance = pino({
 });
 
 function error(...errors: unknown[]) {
+  prisma.$disconnect();
   console.error(errors);
 
   errors.forEach(error => {

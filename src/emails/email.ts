@@ -64,7 +64,8 @@ export default function createMailer(
     | "verification.hbs"
     | "account-created.hbs"
     | "password-reset.hbs"
-    | "password_reseted.hbs";
+    | "password_reseted.hbs"
+    | "subuser-created.hbs";
 
   async function renderTemplate(pathname: templates, data: Record<string, unknown>) {
     const filePath = path.resolve(__dirname, "templates", pathname);

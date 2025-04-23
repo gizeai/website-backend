@@ -37,8 +37,10 @@ export const translation = {
     not_enterprise: "Empresa vinculada a fatura não encontrada",
   },
   enterprise: {
-    not_found: "Empresa não encontrada",
+    not_found: "Empresa não encontrada, ou não foi ativa.",
     not_active: "A primeira fatura dessa empresa ainda não foi paga",
     expired: "A fatura da empresa expirou",
+    subuser_is_exists: "Essa conta já é subusuário dessa empresa.",
+    cant_add_yourself_subuser: "Você não pode se colocar como subusuário da sua empresa.",
   },
 } as const;

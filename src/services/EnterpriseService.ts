@@ -1,5 +1,8 @@
 import PLANS, { PlansNamesTypes } from "@/constants/PLANS";
+import createMailer from "@/emails/email";
+import PasswordManager from "@/managers/PasswordManager";
 import isPermission from "@/utils/isPermission";
+import logger from "@/utils/logger";
 import prisma from "@/utils/prisma";
 import { Enterprise, Plan, User } from "@prisma/client";
 import { TFunction } from "i18next";
@@ -26,42 +29,6 @@ const EnterpriseService = {
       success: true,
       status: 200,
       data: enterprise,
-    };
-  },
-
-  delete: async (t: Translaction, user: User | undefined, id: string) => {
-    const enterprise = await prisma.enterprise.findUnique({
-      where: {
-        id: id,
-      },
-    });
-
-    if (!enterprise) {
-      return {
-        success: false,
-        status: 404,
-        data: { error: t("enterprise.not_found") },
-      };
-    }
-
-    if (enterprise.userId !== (user as User | undefined)?.id) {
-      return {
-        success: false,
-        status: 403,
-        data: { error: t("general_erros.not_permission_to_action") },
-      };
-    }
-
-    await prisma.enterprise.delete({
-      where: {
-        id: id,
-      },
-    });
-
-    return {
-      success: true,
-      status: 200,
-      data: { deleted: true },
     };
   },
 
@@ -213,6 +180,195 @@ const EnterpriseService = {
       success: true,
       status: 200,
       data: options?.active ? enterprises.filter(enterprise => enterprise.active) : enterprises,
+    };
+  },
+
+  deleteForced: async (t: Translaction, id: string) => {
+    const enterprise = await prisma.enterprise.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        id: true,
+        userId: true,
+      },
+    });
+
+    if (!enterprise) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("enterprise.not_found") },
+      };
+    }
+
+    await prisma.enterprise.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return {
+      success: true,
+      status: 200,
+      data: { deleted: true },
+    };
+  },
+
+  delete: async (t: Translaction, user: User | undefined, id: string, accountPassword: string) => {
+    const enterprise = await prisma.enterprise.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        id: true,
+        userId: true,
+      },
+    });
+
+    if (!enterprise) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("enterprise.not_found") },
+      };
+    }
+
+    if (enterprise.userId !== (user as User)?.id) {
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.not_permission_to_action") },
+      };
+    }
+
+    if (!PasswordManager.comparePassword(accountPassword, (user as User)?.password ?? "")) {
+      return {
+        success: false,
+        status: 400,
+        data: { error: t("user.invalid_password") },
+      };
+    }
+
+    await prisma.enterprise.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return {
+      success: true,
+      status: 200,
+      data: { deleted: true },
+    };
+  },
+
+  addSubuser: async (
+    t: Translaction,
+    user: User | undefined,
+    id: string,
+    email: string,
+    permission: "USER" | "ADMINISTRATOR"
+  ) => {
+    const enterprise = await prisma.enterprise.findUnique({
+      where: {
+        id: id,
+        active: true,
+      },
+    });
+
+    if (!enterprise) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("enterprise.not_found") },
+      };
+    }
+
+    if (!user) {
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.not_permission_to_action") },
+      };
+    }
+
+    if (!(await isPermission(enterprise, user).isAdministrator())) {
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.not_permission_to_action") },
+      };
+    }
+
+    const subuserAccount = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!subuserAccount) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("user.user_not_found_with_email") },
+      };
+    }
+
+    if (subuserAccount.id === user.id) {
+      return {
+        success: false,
+        status: 400,
+        data: { error: t("enterprise.cant_add_yourself_subuser") },
+      };
+    }
+
+    const isSubuser = await prisma.subuser.findFirst({
+      where: {
+        userId: subuserAccount.id,
+        enterpriseId: id,
+      },
+      select: {
+        email: true,
+      },
+    });
+
+    if (isSubuser) {
+      return {
+        success: false,
+        status: 409,
+        data: { error: t("enterprise.subuser_is_exists") },
+      };
+    }
+
+    await prisma.subuser.create({
+      data: {
+        email: email,
+        permission: permission,
+        userId: subuserAccount.id,
+        enterprise: {
+          connect: { id: id },
+        },
+      },
+    });
+
+    try {
+      const mailer = createMailer();
+
+      const template = await mailer.template("subuser-created.hbs", {
+        name: subuserAccount.name,
+        enterpriseName: enterprise.name,
+      });
+
+      await mailer.send("account", email, "Now you are a subuser", template, true);
+    } catch (error) {
+      logger.error(error);
+    }
+
+    return {
+      success: true,
+      status: 201,
+      data: { created: true },
     };
   },
 };

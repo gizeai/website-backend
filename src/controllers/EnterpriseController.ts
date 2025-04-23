@@ -25,7 +25,7 @@ const EnterpriseController = {
       }
 
       const shortcutDeleteEnteprise = async () => {
-        await EnterpriseService.delete(req.t, req.user as User, enterprise.data.id);
+        await EnterpriseService.deleteForced(req.t, enterprise.data.id);
       };
 
       try {
@@ -144,6 +144,49 @@ const EnterpriseController = {
       }
 
       res.status(200).json({ update: true });
+    } catch (error) {
+      logger.error(error);
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+    }
+  },
+
+  delete: async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+      const password = req.body.password as string;
+      const result = await EnterpriseService.delete(req.t, req.user as User, id, password);
+
+      if (!result.success) {
+        res.status(result.status).json(result.data);
+        return;
+      }
+
+      res.status(result.status).json(result.data);
+    } catch (error) {
+      logger.error(error);
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+    }
+  },
+
+  addSubuser: async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+      const email = req.body.email as string;
+      const permission = req.body.ppermission as "USER" | "ADMINISTRATOR";
+      const result = await EnterpriseService.addSubuser(
+        req.t,
+        req.user as User,
+        id,
+        email,
+        permission
+      );
+
+      if (!result.success) {
+        res.status(result.status).json(result.data);
+        return;
+      }
+
+      res.status(result.status).json(result.data);
     } catch (error) {
       logger.error(error);
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });
