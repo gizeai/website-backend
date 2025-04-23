@@ -78,7 +78,7 @@ describe("GET /user/auth", () => {
     const res = await axiosBase.get("/user/auth", {
       headers: {
         Authorization:
-          `Bearer ${process.env.AUTH_TOKEN}`,
+          `Bearer ${process.env.TEST_AUTH_TOKEN}`,
       },
     });
 
@@ -158,7 +158,7 @@ describe("POST /user/invoices", () => {
     const res = await axiosBase.get("/user/invoices", {
       headers: {
         Authorization:
-          `Bearer ${process.env.AUTH_TOKEN}`,
+          `Bearer ${process.env.TEST_AUTH_TOKEN}`,
       },
     });
 
@@ -175,7 +175,7 @@ describe("POST /user/edit", () => {
     const res = await axiosBase.put("/user/edit", formdata, {
       headers: {
         Authorization:
-          `Bearer ${process.env.AUTH_TOKEN}`,
+          `Bearer ${process.env.TEST_AUTH_TOKEN}`,
       },
     });
 

@@ -17,5 +17,6 @@ beforeAll(async () => {
   expect(data.success).toBe(true);
   expect(typeof data.auth_token).toBe("string");
 
-  process.env.AUTH_TOKEN = data.auth_token;
+  process.env.TEST_AUTH_TOKEN = data.auth_token;
+  process.env.TEST_ENTERPRISE_ID = "01ed9d10-3f15-4fc2-a6f9-13ef2e241836";
 });
