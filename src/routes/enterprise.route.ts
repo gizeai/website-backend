@@ -72,6 +72,31 @@ enterpriseRoute.post(
   EnterpriseController.addSubuser
 );
 
+//POST /api/enterprise/:id/subuser/delete
+const enterpriseSubuserDeleteSchema = z.object({
+  email: zodpressets.email,
+});
+
+enterpriseRoute.post(
+  "/:id/subuser/delete",
+  zodschema(enterpriseSubuserDeleteSchema),
+  authentication(),
+  EnterpriseController.removeSubuser
+);
+
+//PUT /api/enterprise/:id/subuser/edit
+const enterpriseSubusereditSchema = z.object({
+  email: zodpressets.email,
+  permission: z.enum(["USER", "ADMINISTRATOR"]),
+});
+
+enterpriseRoute.put(
+  "/:id/subuser/edit",
+  zodschema(enterpriseSubusereditSchema),
+  authentication(),
+  EnterpriseController.editSubuser
+);
+
 export default {
   path: "/enterprise",
   router: enterpriseRoute,

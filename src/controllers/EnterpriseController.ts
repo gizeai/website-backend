@@ -192,6 +192,49 @@ const EnterpriseController = {
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
   },
+
+  removeSubuser: async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+      const email = req.body.email as string;
+      const result = await EnterpriseService.deleteSubuser(req.t, req.user as User, id, email);
+
+      if (!result.success) {
+        res.status(result.status).json(result.data);
+        return;
+      }
+
+      res.status(result.status).json(result.data);
+    } catch (error) {
+      logger.error(error);
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+    }
+  },
+
+  editSubuser: async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+      const email = req.body.email as string;
+      const permission = req.body.ppermission as "USER" | "ADMINISTRATOR";
+      const result = await EnterpriseService.editSubuser(
+        req.t,
+        req.user as User,
+        id,
+        email,
+        permission
+      );
+
+      if (!result.success) {
+        res.status(result.status).json(result.data);
+        return;
+      }
+
+      res.status(result.status).json(result.data);
+    } catch (error) {
+      logger.error(error);
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+    }
+  },
 };
 
 export default EnterpriseController;

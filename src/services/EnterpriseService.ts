@@ -268,7 +268,7 @@ const EnterpriseService = {
     user: User | undefined,
     id: string,
     email: string,
-    permission: "USER" | "ADMINISTRATOR"
+    userPerm: "USER" | "ADMINISTRATOR"
   ) => {
     const enterprise = await prisma.enterprise.findUnique({
       where: {
@@ -344,7 +344,7 @@ const EnterpriseService = {
     await prisma.subuser.create({
       data: {
         email: email,
-        permission: permission,
+        permission: userPerm === "USER" ? "USER" : "ADMINISTRATOR",
         userId: subuserAccount.id,
         enterprise: {
           connect: { id: id },
@@ -369,6 +369,169 @@ const EnterpriseService = {
       success: true,
       status: 201,
       data: { created: true },
+    };
+  },
+
+  deleteSubuser: async (t: Translaction, user: User | undefined, id: string, email: string) => {
+    const enterprise = await prisma.enterprise.findUnique({
+      where: {
+        id: id,
+        active: true,
+      },
+    });
+
+    if (!enterprise) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("enterprise.not_found") },
+      };
+    }
+
+    if (!user) {
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.not_permission_to_action") },
+      };
+    }
+
+    if (!(await isPermission(enterprise, user).isAdministrator())) {
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.not_permission_to_action") },
+      };
+    }
+
+    const subuserAccount = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!subuserAccount) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("user.user_not_found_with_email") },
+      };
+    }
+
+    const isSubuser = await prisma.subuser.findFirst({
+      where: {
+        userId: subuserAccount.id,
+        enterpriseId: id,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!isSubuser) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("enterprise.subuser_not_exists") },
+      };
+    }
+
+    await prisma.subuser.delete({
+      where: {
+        id: isSubuser.id,
+      },
+    });
+
+    return {
+      success: true,
+      status: 200,
+      data: { deleted: true },
+    };
+  },
+
+  editSubuser: async (
+    t: Translaction,
+    user: User | undefined,
+    id: string,
+    email: string,
+    permission: "USER" | "ADMINISTRATOR"
+  ) => {
+    const enterprise = await prisma.enterprise.findUnique({
+      where: {
+        id: id,
+        active: true,
+      },
+    });
+
+    if (!enterprise) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("enterprise.not_found") },
+      };
+    }
+
+    if (!user) {
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.not_permission_to_action") },
+      };
+    }
+
+    if (!(await isPermission(enterprise, user).isAdministrator())) {
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.not_permission_to_action") },
+      };
+    }
+
+    const subuserAccount = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!subuserAccount) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("user.user_not_found_with_email") },
+      };
+    }
+
+    const isSubuser = await prisma.subuser.findFirst({
+      where: {
+        userId: subuserAccount.id,
+        enterpriseId: id,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!isSubuser) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("enterprise.subuser_not_exists") },
+      };
+    }
+
+    await prisma.subuser.update({
+      where: {
+        id: isSubuser.id,
+      },
+      data: {
+        permission: permission,
+      },
+    });
+
+    return {
+      success: true,
+      status: 200,
+      data: { updated: true },
     };
   },
 };

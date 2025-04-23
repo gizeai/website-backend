@@ -150,3 +150,120 @@ describe("POST /enterprise/create and GET /enterprise", () => {
     expect(res.status).toBe(404);
   })
 });
+
+describe("ADDSUBUSER /enterprise/:id/subuser", () => {
+  it("should /enterprise/:id/subuser/create return 201", async () => {
+    const res = await axiosBase.post(`/enterprise/ebfd70c7-efd7-4246-9d46-56227e47f220/subuser/create`, {
+      email: "kauabd137@gmail.com",
+      permission: "ADMINISTRATOR"
+    }, {
+      headers: {
+        Authorization:
+           `Bearer ${process.env.AUTH_TOKEN}`,
+      },
+    })
+
+    expect(res.status).toBe(201);
+    expect(res.data.created).toBe(true);
+  })
+
+  it("should /enterprise/:id/subuser/create return 409", async () => {
+    const res = await axiosBase.post(`/enterprise/ebfd70c7-efd7-4246-9d46-56227e47f220/subuser/create`, {
+      email: "kauabd137@gmail.com",
+      permission: "ADMINISTRATOR"
+    }, {
+      headers: {
+        Authorization:
+           `Bearer ${process.env.AUTH_TOKEN}`,
+      },
+    })
+
+    expect(res.status).toBe(409);
+  })
+
+  it("should /enterprise/:id/subuser/create return 400", async () => {
+    const res = await axiosBase.post(`/enterprise/ebfd70c7-efd7-4246-9d46-56227e47f220/subuser/create`, {
+      email: "kauacomtil021@gmail.com",
+      permission: "ADMINISTRATOR"
+    }, {
+      headers: {
+        Authorization:
+           `Bearer ${process.env.AUTH_TOKEN}`,
+      },
+    })
+
+    expect(res.status).toBe(400);
+  })
+
+   it("should /enterprise/:id/subuser/edit return 200", async () => {
+    const res = await axiosBase.put(`/enterprise/ebfd70c7-efd7-4246-9d46-56227e47f220/subuser/edit`, {
+      email: "kauabd137@gmail.com",
+      permission: "USER"
+    }, {
+      headers: {
+        Authorization:
+           `Bearer ${process.env.AUTH_TOKEN}`,
+      },
+    })
+
+
+    expect(res.status).toBe(200);
+    expect(res.data.updated).toBe(true);
+  })
+
+  it("should /enterprise/:id/subuser/edit return 404", async () => {
+    const res = await axiosBase.put(`/enterprise/ebfd70c7-efd7-4246-9d46-56227e47f220/subuser/edit`, {
+      email: "kauabdawdawdawdawdawd137@gmail.com",
+      permission: "USER"
+    }, {
+      headers: {
+        Authorization:
+           `Bearer ${process.env.AUTH_TOKEN}`,
+      },
+    })
+
+    expect(res.status).toBe(404);
+  })
+
+  it("should /enterprise/:id/subuser/edit return 200 of set ADMINISTRATOR", async () => {
+    const res = await axiosBase.put(`/enterprise/ebfd70c7-efd7-4246-9d46-56227e47f220/subuser/edit`, {
+      email: "kauabd137@gmail.com",
+      permission: "ADMINISTRATOR"
+    }, {
+      headers: {
+        Authorization:
+           `Bearer ${process.env.AUTH_TOKEN}`,
+      },
+    })
+
+    expect(res.status).toBe(200);
+    expect(res.data.updated).toBe(true);
+  })
+
+  it("should /enterprise/:id/subuser/delete return 200", async () => {
+    const res = await axiosBase.post(`/enterprise/ebfd70c7-efd7-4246-9d46-56227e47f220/subuser/delete`, {
+      email: "kauabd137@gmail.com",
+    }, {
+      headers: {
+        Authorization:
+           `Bearer ${process.env.AUTH_TOKEN}`,
+      },
+    })
+
+    expect(res.status).toBe(200);
+    expect(res.data.deleted).toBe(true);
+  })
+
+  it("should /enterprise/:id/subuser/delete return 404", async () => {
+    const res = await axiosBase.post(`/enterprise/ebfd70c7-efd7-4246-9d46-56227e47f220/subuser/delete`, {
+      email: "kauabd137@gmail.com",
+    }, {
+      headers: {
+        Authorization:
+           `Bearer ${process.env.AUTH_TOKEN}`,
+      },
+    })
+
+    expect(res.status).toBe(404);
+  })
+})
