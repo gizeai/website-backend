@@ -1,4 +1,5 @@
-import ImgAI from "@/imgai/ImgAI";
+import MatchingTemplate from "@/imgai/MatchingTemplate";
+import PostGenerator from "@/imgai/PostGenerator";
 import isPermission from "@/utils/isPermission";
 import prisma from "@/utils/prisma";
 import { PostType, Upload, User } from "@prisma/client";
@@ -23,7 +24,7 @@ const PostService = {
     carrousel_count: number | undefined,
     instructions: { description: string; fileName: string }[]
   ) => {
-    const imgai = ImgAI(res);
+    const postGenerator = new PostGenerator(res);
 
     const enterprise = await prisma.enterprise.findUnique({
       where: {
@@ -74,7 +75,7 @@ const PostService = {
       data: {
         artModel: art_model,
         creditsUsed: 0,
-        iaModel: imgai.model,
+        iaModel: MatchingTemplate.MODEL_VERSION,
         promptSent: description,
         title: title,
         type: postType,
@@ -93,7 +94,7 @@ const PostService = {
       })
       .filter(instruction => instruction.filePath.length > 0);
 
-    await imgai.imagine({
+    await postGenerator.imagine({
       description: description,
       instructions: imgs,
       type: type,
