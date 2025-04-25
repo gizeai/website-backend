@@ -4,7 +4,7 @@ import queueUtils from "./queueUtils";
 import logger from "@/utils/logger";
 import i18next from "@/utils/i18n";
 import ProccessManagerService from "./ProccessManagerService";
-import MatchingTemplate from "./MatchingTemplate";
+import MatchingTemplate from "./training/MatchingTemplate";
 
 const imageQueue = Queue<PostGeneratorOptions>("image-generation", {
   redis: {

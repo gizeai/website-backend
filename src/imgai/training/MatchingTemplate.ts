@@ -1,7 +1,7 @@
 import { Job } from "bull";
 import i18next from "@/utils/i18n";
-import { NotifyClientData, PostGeneratorOptions } from "./PostGenerator";
-import ImgV0 from "./training/ImgV0";
+import { NotifyClientData, PostGeneratorOptions } from "../PostGenerator";
+import ImgV0 from "./Imgv0/ImgV0";
 
 const MODEL = ImgV0;
 

@@ -11,7 +11,10 @@ const postRoute = Router();
 //POST /api/post/create
 const postCreateSchema = z.object({
   title: z.string().min(5, i18next.t("post.invalid_title")),
-  description: z.string().min(5, i18next.t("post.invalid_description")),
+  description: z
+    .string()
+    .min(5, i18next.t("post.invalid_description"))
+    .max(600, i18next.t("post.invalid_max_description")),
   art_model: z.enum(["art", "ghibi", "animation", "realistic"]),
   type: z.enum(["image", "video", "carrousel"]),
   files: z.any(),
@@ -25,7 +28,10 @@ const postCreateSchema = z.object({
     const instructions = JSON.parse(value);
     const instructionsSchema = z.array(
       z.object({
-        description: z.string().min(20, i18next.t("post.invalid_instruction_description")),
+        description: z
+          .string()
+          .min(20, i18next.t("post.invalid_instruction_description"))
+          .max(300, i18next.t("post.invalid_max_instruction_description")),
         fileName: z.string(),
       })
     );

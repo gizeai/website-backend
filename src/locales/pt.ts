@@ -48,8 +48,11 @@ export const translation = {
     invalid_title: "O seu título deve ter mais de 5 caracteres.",
     invalid_description:
       "Coloque uma descrição detalhada para a IA compreender, ela deve ter no mínimo 50 caracteres.",
+    invalid_max_description: "A descrição deve ter menos que 600 caracteres",
     invalid_instruction_description:
       "A descrição de uma instrução deve ter no mínimo 20 caracteres.",
+    invalid_max_instruction_description:
+      "A descrição de uma instrução deve ter menos que 300 caracteres",
     processing_legend: "Imaginando as palavras perfeitas para a sua legenda...",
     processing_tags: "Explorando o universo das hashtags certeiras...",
     processing_image: "Sua ideia está tomando forma. Prepare-se para o impacto.",

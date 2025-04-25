@@ -1,4 +1,4 @@
-import MatchingTemplate from "@/imgai/MatchingTemplate";
+import MatchingTemplate from "@/imgai/training/MatchingTemplate";
 import PostGenerator from "@/imgai/PostGenerator";
 import isPermission from "@/utils/isPermission";
 import prisma from "@/utils/prisma";
