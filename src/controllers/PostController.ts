@@ -22,6 +22,7 @@ const PostController = {
       const art_model = req.body.art_model as ArtsModelsTypes;
       const type = req.body.type as TypePostType;
       const files = req.uploads;
+      const carrousel_count = req.body.carrousel_count as number | undefined;
       const instructions = JSON.parse(req.body.instructions) as {
         description: string;
         fileName: string;
@@ -45,6 +46,7 @@ const PostController = {
         art_model,
         type,
         files,
+        carrousel_count,
         instructions
       );
 

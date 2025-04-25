@@ -20,6 +20,7 @@ const PostService = {
     art_model: ArtsModelsTypes,
     type: TypePostType,
     files: Upload[] | undefined,
+    carrousel_count: number | undefined,
     instructions: { description: string; fileName: string }[]
   ) => {
     const imgai = ImgAI(res);
@@ -96,6 +97,7 @@ const PostService = {
       description: description,
       instructions: imgs,
       type: type,
+      carrousel_count: undefined,
       art_model: art_model,
     });
 

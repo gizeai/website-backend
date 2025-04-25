@@ -16,6 +16,11 @@ const postCreateSchema = z.object({
   type: z.enum(["image", "video", "carrousel"]),
   files: z.any(),
   enterprise_id: z.string().uuid(),
+  carrousel_count: z
+    .string()
+    .refine(value => Number(value) > 0)
+    .transform(value => Number(value))
+    .optional(),
   instructions: z.string().refine(value => {
     const instructions = JSON.parse(value);
     const instructionsSchema = z.array(

@@ -18,7 +18,8 @@ export interface NotifyData {
 
 interface Options {
   description: string;
-  type: string;
+  type: "image" | "video" | "carrousel";
+  carrousel_count?: number;
   art_model: string;
   instructions: { description: string; filePath: string }[];
 }
@@ -68,7 +69,7 @@ imageQueue.process(MAX_QUEUE_PROCCESSING, async job => {
     notifyClient(jobID, {
       status: "processing",
       data: {
-        message: i18next.t("post.processing_prompt_1"),
+        message: i18next.t("post.processing_legend"),
       },
     });
 
@@ -82,30 +83,82 @@ imageQueue.process(MAX_QUEUE_PROCCESSING, async job => {
     notifyClient(jobID, {
       status: "processing",
       data: {
-        message: i18next.t("post.processing_prompt_2"),
+        message: i18next.t("post.processing_tags"),
       },
     });
 
     const { tags } = await imgAiGenerateTags(openai, job.data.description, job.data.type);
 
-    notifyClient(jobID, {
-      status: "processing",
-      data: {
-        message: i18next.t("post.processing_prompt_3"),
-      },
-    });
+    if (job.data.type === "image") {
+      notifyClient(jobID, {
+        status: "processing",
+        data: {
+          message: i18next.t("post.processing_image"),
+        },
+      });
 
-    const image = await imgAiGenerateImage(openai, job.data.instructions, job.data.art_model);
+      const image = await imgAiGenerateImage(openai, job.data.instructions, job.data.art_model);
 
-    notifyClient(jobID, {
-      status: "completed",
-      data: {
-        message: i18next.t("post.prompt_processed"),
-        description: description,
-        tags: tags,
-        images: [image],
-      },
-    });
+      notifyClient(jobID, {
+        status: "completed",
+        data: {
+          message: i18next.t("post.prompt_processed"),
+          description: description,
+          tags: tags,
+          images: [image],
+        },
+      });
+    } else if (job.data.type === "carrousel") {
+      notifyClient(jobID, {
+        status: "processing",
+        data: {
+          message: i18next.t("post.processing_carousel"),
+        },
+      });
+
+      const carouselCount = job.data.carrousel_count ?? 1;
+
+      const images = await Promise.all(
+        Array.from({ length: carouselCount }, async () => {
+          const img = await imgAiGenerateImage(openai, job.data.instructions, job.data.art_model);
+          return img;
+        })
+      ).then(results => results.filter(Boolean));
+
+      notifyClient(jobID, {
+        status: "completed",
+        data: {
+          message: i18next.t("post.prompt_processed"),
+          description: description,
+          tags: tags,
+          images: images,
+        },
+      });
+    } else if (job.data.type === "video") {
+      notifyClient(jobID, {
+        status: "processing",
+        data: {
+          message: i18next.t("post.processing_video"),
+        },
+      });
+
+      const image = await imgAiGenerateImage(openai, job.data.instructions, job.data.art_model);
+
+      //TODO: Criar um vídeo com a imagem gerada.
+      const video = image;
+
+      notifyClient(jobID, {
+        status: "completed",
+        data: {
+          message: i18next.t("post.prompt_processed"),
+          description: description,
+          tags: tags,
+          images: [video],
+        },
+      });
+    } else {
+      throw new Error(`Invalid type ${job.data.type}`);
+    }
 
     const time2 = Date.now();
 
