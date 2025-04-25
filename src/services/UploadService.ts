@@ -79,13 +79,51 @@ const UploadService = {
       };
     }
 
-    fs.unlinkSync(upload.storedLocation);
+    if (fs.existsSync(upload.storedLocation)) {
+      fs.unlinkSync(upload.storedLocation);
+    }
 
     await prisma.upload.delete({
       where: {
         id: id,
       },
     });
+
+    return {
+      success: true,
+      status: 200,
+      data: { deleted: true },
+    };
+  },
+
+  deleteForce: async (t: Translaction, id: string) => {
+    const upload = await prisma.upload.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!upload) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("upload.file_not_found") },
+      };
+    }
+
+    try {
+      await prisma.upload.delete({
+        where: {
+          id: upload.id,
+        },
+      });
+    } catch {
+      /* empty */
+    }
+
+    if (fs.existsSync(upload.storedLocation)) {
+      fs.unlinkSync(upload.storedLocation);
+    }
 
     return {
       success: true,

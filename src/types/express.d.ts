@@ -3,7 +3,7 @@ import { Upload, User } from "@prisma/client";
 declare global {
   namespace Express {
     interface Request {
-      upload?: Upload;
+      uploads?: Upload[];
       user?: User;
     }
   }

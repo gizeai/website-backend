@@ -44,4 +44,16 @@ export const translation = {
     subuser_not_exists: "Essa conta não é subusuário dessa empresa.",
     cant_add_yourself_subuser: "Você não pode se colocar como subusuário da sua empresa.",
   },
+  post: {
+    invalid_title: "O seu título deve ter mais de 5 caracteres.",
+    invalid_description:
+      "Coloque uma descrição detalhada para a IA compreender, ela deve ter no mínimo 50 caracteres.",
+    invalid_instruction_description:
+      "A descrição de uma instrução deve ter no mínimo 20 caracteres.",
+    processing_prompt_1: "Imaginando as palavras perfeitas para a sua legenda...",
+    processing_prompt_2: "Explorando o universo das hashtags certeiras...",
+    processing_prompt_3: "Sua ideia está tomando forma. Prepare-se para o impacto.",
+    prompt_processed: "Sua criação está pronta para brilhar.",
+    in_queue: "Quase lá! Posição {{position}}, em cerca de {{time}} segundos começamos.",
+  },
 } as const;

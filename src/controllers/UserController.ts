@@ -141,7 +141,7 @@ const UserController = {
   edit: async (req: Request, res: Response) => {
     try {
       const userId = req.user as User;
-      const upload = req.upload;
+      const upload = req.uploads?.[0];
       const userName = req.body.name as string | undefined;
       const password = req.body.password as string | undefined;
 

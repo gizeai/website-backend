@@ -16,13 +16,13 @@ const storage = multer.diskStorage({
   },
 });
 
-function upload(formname: string, uploadLimitInMb = 3) {
+function upload(formname: string, uploadLimitInMb = 3, maxFiles = 5) {
   const uploadMiddleware = multer({
     storage,
     limits: {
       fileSize: uploadLimitInMb * 1024 * 1024,
     },
-  }).single(formname);
+  }).array(formname, maxFiles);
 
   return (req: Request, res: Response, next: NextFunction) => {
     uploadMiddleware(req, res, async err => {
@@ -35,14 +35,43 @@ function upload(formname: string, uploadLimitInMb = 3) {
         res.status(500).json({ error: req.t("general_erros.upload_error") });
         return;
       }
-      if (!req.file) {
+
+      const files = req.files as Express.Multer.File[] | undefined;
+
+      if (!files || files.length === 0) {
         next();
         return;
       }
 
       try {
-        const upload = await UploadService.upload((req.user as User) ?? undefined, req.file);
-        req.upload = upload;
+        const uploads = await Promise.all(
+          files.map(file => UploadService.upload((req.user as User) ?? undefined, file))
+        );
+        req.uploads = uploads;
+
+        const originalJson = res.json;
+
+        res.json = function (body) {
+          if (body && body.error && (req.uploads?.length ?? 0) > 0) {
+            for (const uplaod of req.uploads ?? []) {
+              UploadService.deleteForce(req.t, uplaod.id);
+            }
+          }
+
+          return originalJson.call(this, body);
+        };
+
+        const originalStatus = res.status;
+        res.status = function (code) {
+          if (code >= 400 && (req.uploads?.length ?? 0) > 0) {
+            for (const uplaod of req.uploads ?? []) {
+              UploadService.deleteForce(req.t, uplaod.id);
+            }
+          }
+
+          return originalStatus.call(this, code);
+        };
+
         next();
       } catch (error) {
         logger.error(error);

@@ -5,6 +5,7 @@ import authRoute from "./auth.route";
 import uploadRoute from "./upload.route";
 import enterpriseRoute from "./enterprise.route";
 import cartRoute from "./cart.route";
+import postRoute from "./post.route";
 
 function registerRoutes(app: Express) {
   const routes: { path: string; router: Router }[] = [
@@ -14,6 +15,7 @@ function registerRoutes(app: Express) {
     uploadRoute,
     enterpriseRoute,
     cartRoute,
+    postRoute,
   ];
 
   routes.forEach(route => {

@@ -56,7 +56,18 @@ userRoute.put("/reedem/:code", zodschema(userReedemCodeSchema), UserController.r
 userRoute.get("/invoices", authentication(), UserController.invoices);
 
 //PUT /api/user/edit
-userRoute.put("/edit", authentication(), upload("avatar"), UserController.edit);
+const userEditCodeSchema = z.object({
+  name: z.string().min(3, i18next.t("validators.name_min_3_caracteres")),
+  avatar: z.any(),
+  password: zodpressets.password,
+});
+userRoute.put(
+  "/edit",
+  zodschema(userEditCodeSchema),
+  authentication(),
+  upload("avatar"),
+  UserController.edit
+);
 
 export default {
   path: "/user",

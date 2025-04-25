@@ -48,6 +48,12 @@ enum Recurrence {
   YEARLY
 }
 
+enum FeedBack {
+  LIKE
+  DISLIKE
+  NONE
+}
+
 model User {
   id               String      @id @default(uuid())
   signUpId         String      @unique @map("sign_up_id")
@@ -155,17 +161,21 @@ model Post {
   enterprise   Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
   enterpriseId String     @map("enterprise_id")
 
-  title              String
-  promptSent         String   @map("body_send")
-  artModel           String   @map("art_model")
-  type               PostType
-  instructions       String   @default("{}") @db.Text //JSON STRING
+  title        String
+  promptSent   String   @map("body_send")
+  artModel     String   @map("art_model")
+  type         PostType
+  instructions String   @default("{}") @db.Text //JSON STRING
+
   responseBody       String?  @map("response_body")
+  responseTags       String[] @map("response_tags")
   responseAttachment String[] @map("response_attachment")
 
-  iaModel     String @map("ia_model")
-  edits       Int    @default(0) @map("edits")
-  creditsUsed Int    @map("credits_used")
+  edits       Int @default(0) @map("edits")
+  creditsUsed Int @map("credits_used")
+
+  iaModel  String   @map("ia_model")
+  feedback FeedBack @default(NONE)
 
   createdAt DateTime @default(now()) @map("created_at")
   updateAt  DateTime @updatedAt @map("update_at")
