@@ -163,7 +163,6 @@ const PostController = {
   get: async (req: Request, res: Response) => {
     try {
       const enterprise_id = req.params.enterprise as string;
-      console.log(enterprise_id);
       const enterprise = await EnterpriseService.get(req.t, enterprise_id);
 
       if (!enterprise.success) {
