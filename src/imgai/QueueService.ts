@@ -51,7 +51,7 @@ export default function QueueService(
 
     try {
       proccessManagerService.startProcessing();
-      const matchingTemplate = new MatchingTemplate(job);
+      const matchingTemplate = new MatchingTemplate(job, job.data.postId);
       await matchingTemplate.proccess(notifyClient);
       proccessManagerService.endProcessing();
     } catch (error) {

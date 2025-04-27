@@ -27,6 +27,34 @@ const UploadService = {
     return upload;
   },
 
+  uploadWithInfos: async (
+    user: User | undefined,
+    filename: string,
+    originalname: string,
+    mimetype: string,
+    size: number,
+    path: string
+  ) => {
+    let userid = "";
+
+    if (user) {
+      userid = user.id;
+    }
+
+    const upload = await prisma.upload.create({
+      data: {
+        fileName: filename,
+        userId: userid,
+        originalName: originalname,
+        mimeType: mimetype,
+        size: size,
+        storedLocation: path,
+      },
+    });
+
+    return upload;
+  },
+
   get: async (t: Translaction, id: string) => {
     const upload = await prisma.upload.findUnique({
       where: {

@@ -24,6 +24,20 @@ const PostService = {
     carrousel_count: number | undefined,
     instructions: { description: string; fileName: string }[]
   ) => {
+    if (files?.length === instructions.length) {
+      const instructiosnFilesName = instructions.map(instruction => instruction.fileName);
+
+      for (const file of files) {
+        if (!instructiosnFilesName.includes(file.originalName)) {
+          return {
+            success: false,
+            status: 400,
+            data: { error: t("post.invalid_file_instructions", { name: file.originalName }) },
+          };
+        }
+      }
+    }
+
     const postGenerator = new PostGenerator(res);
 
     const enterprise = await prisma.enterprise.findUnique({
@@ -71,12 +85,13 @@ const PostService = {
         break;
     }
 
-    await prisma.post.create({
+    const post = await prisma.post.create({
       data: {
         artModel: art_model,
         creditsUsed: 0,
         iaModel: MatchingTemplate.MODEL_VERSION,
         promptSent: description,
+        instructions: JSON.stringify(instructions),
         title: title,
         type: postType,
         enterprise: { connect: { id: enterprise_id } },
@@ -94,18 +109,82 @@ const PostService = {
       })
       .filter(instruction => instruction.filePath.length > 0);
 
-    await postGenerator.imagine({
+    const { jobId } = await postGenerator.imagine({
+      postId: post.id,
       description: description,
       instructions: imgs,
       type: type,
-      carrousel_count: undefined,
+      carrousel_count: carrousel_count,
       art_model: art_model,
     });
 
     return {
       success: true,
       status: 202,
+      data: { job: jobId },
+    };
+  },
+
+  stream: async (
+    res: Response,
+    t: Translaction,
+    user: User,
+    enterprise_id: string,
+    jobid: string
+  ) => {
+    const postGenerator = new PostGenerator(res);
+
+    const enterprise = await prisma.enterprise.findUnique({
+      where: {
+        id: enterprise_id,
+        active: true,
+      },
+    });
+
+    if (!enterprise) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("enterprise.not_found") },
+      };
+    }
+
+    if (!user) {
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.not_permission_to_action") },
+      };
+    }
+
+    if (!(await isPermission(enterprise, user).isUser())) {
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.not_permission_to_action") },
+      };
+    }
+
+    await postGenerator.stream(jobid);
+
+    return {
+      success: true,
+      status: 202,
       data: { created: true },
+    };
+  },
+
+  get: async (t: Translaction, enterpriseId: string) => {
+    const posts = await prisma.post.findMany({
+      where: {
+        enterpriseId: enterpriseId,
+      },
+    });
+
+    return {
+      success: true,
+      status: 200,
+      data: posts,
     };
   },
 };

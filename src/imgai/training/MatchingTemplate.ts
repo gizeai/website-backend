@@ -2,18 +2,52 @@ import { Job } from "bull";
 import i18next from "@/utils/i18n";
 import { NotifyClientData, PostGeneratorOptions } from "../PostGenerator";
 import ImgV0 from "./Imgv0/ImgV0";
+import prisma from "@/utils/prisma";
+import openAiToMyUploadSystem from "@/utils/openAiToMyUploadSystem";
 
 const MODEL = ImgV0;
 
 export default class MatchingTemplate {
   private job: Job<PostGeneratorOptions>;
+  private postID: string;
   static MODEL_VERSION = MODEL.VERSION;
 
-  constructor(job: Job<PostGeneratorOptions>) {
+  constructor(job: Job<PostGeneratorOptions>, postId: string) {
     this.job = job;
+    this.postID = postId;
+  }
+
+  private saveInPrismaPost(
+    postId: string,
+    credits: number,
+    attachment: string[],
+    body: string,
+    tags: string[]
+  ) {
+    return prisma.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        creditsUsed: credits,
+        responseAttachment: attachment,
+        responseBody: body,
+        responseTags: tags,
+      },
+    });
   }
 
   async proccess(notifyClient: (jobId: string, data: NotifyClientData) => void) {
+    const post = await prisma.post.findUnique({
+      where: {
+        id: this.postID,
+      },
+    });
+
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
     const imgmodel = new MODEL();
     const jobID = this.job.id.toString();
 
@@ -52,6 +86,30 @@ export default class MatchingTemplate {
         this.job.data.art_model
       );
 
+      if (!image) {
+        notifyClient(jobID, {
+          status: "failed",
+          data: {
+            message: i18next.t("general_erros.internal_server_error"),
+          },
+        });
+        return;
+      }
+
+      const uploadUrl = await openAiToMyUploadSystem(image);
+
+      if (!uploadUrl) {
+        notifyClient(jobID, {
+          status: "failed",
+          data: {
+            message: i18next.t("general_erros.internal_server_error"),
+          },
+        });
+        return;
+      }
+
+      await this.saveInPrismaPost(this.postID, 1, [uploadUrl], description, tags);
+
       notifyClient(jobID, {
         status: "completed",
         data: {
@@ -81,6 +139,40 @@ export default class MatchingTemplate {
         })
       ).then(results => results.filter(Boolean));
 
+      const imagesNotUndefined = images.filter(image => image !== undefined);
+
+      if (imagesNotUndefined.length === 0) {
+        notifyClient(jobID, {
+          status: "failed",
+          data: {
+            message: i18next.t("general_erros.internal_server_error"),
+          },
+        });
+        return;
+      }
+
+      const uploadImages: string[] = [];
+
+      for await (const image of imagesNotUndefined) {
+        const uploadUrl = await openAiToMyUploadSystem(image);
+
+        if (uploadUrl) {
+          uploadImages.push(uploadUrl);
+        }
+      }
+
+      if (uploadImages.length === 0) {
+        notifyClient(jobID, {
+          status: "failed",
+          data: {
+            message: i18next.t("general_erros.internal_server_error"),
+          },
+        });
+        return;
+      }
+
+      await this.saveInPrismaPost(this.postID, images.length, uploadImages, description, tags);
+
       notifyClient(jobID, {
         status: "completed",
         data: {
@@ -105,6 +197,8 @@ export default class MatchingTemplate {
 
       //TODO: Criar um vídeo com a imagem gerada.
       const video = image;
+
+      //TODO: Usar o saveInPrismaPost
 
       notifyClient(jobID, {
         status: "completed",

@@ -7,6 +7,7 @@ import PostController from "@/controllers/PostController";
 import upload from "@/middlewares/upload";
 
 const postRoute = Router();
+const BASE = "/:enterprise/post";
 
 //POST /api/post/create
 const postCreateSchema = z.object({
@@ -18,7 +19,6 @@ const postCreateSchema = z.object({
   art_model: z.enum(["art", "ghibi", "animation", "realistic"]),
   type: z.enum(["image", "video", "carrousel"]),
   files: z.any(),
-  enterprise_id: z.string().uuid(),
   carrousel_count: z
     .string()
     .refine(value => Number(value) > 0)
@@ -41,14 +41,18 @@ const postCreateSchema = z.object({
 });
 
 postRoute.post(
-  "/create",
+  `${BASE}/create`,
   upload("files"),
   zodschema(postCreateSchema),
   authentication(),
   PostController.create
 );
 
+postRoute.get(`${BASE}/stream/:job`, authentication(), PostController.stream);
+
+postRoute.get(`${BASE}`, authentication(), PostController.get);
+
 export default {
-  path: "/post",
+  path: "/enterprise",
   router: postRoute,
 };

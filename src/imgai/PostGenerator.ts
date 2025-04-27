@@ -8,6 +8,7 @@ import queueUtils from "./queueUtils";
 const clients = new Map<string, Response>();
 
 export interface PostGeneratorOptions {
+  postId: string;
   description: string;
   type: "image" | "video" | "carrousel";
   carrousel_count?: number;
@@ -38,7 +39,7 @@ export default class PostGenerator {
 
   private notifyClient(jobId: string, data: NotifyClientData) {
     const client = clients.get(jobId);
-    if (client) {
+    if (client && client.destroyed === false) {
       client.write(`data: ${JSON.stringify(data)}\n\n`);
       if (data.status === "completed" || data.status === "failed") {
         client.end();
@@ -47,8 +48,13 @@ export default class PostGenerator {
     }
   }
 
-  async imagine(options: PostGeneratorOptions) {
-    const job = await this.queue.add(options);
+  async stream(jobid: string) {
+    const job = await this.queue.getJob(jobid);
+
+    if (!job) {
+      throw new Error(i18next.t("post.job_not_found"));
+    }
+
     clients.set(job.id.toString(), this.res);
 
     const activeJobs = await this.queue.getActiveCount();
@@ -72,5 +78,13 @@ export default class PostGenerator {
       clients.delete(job.id.toString());
       this.res.end();
     });
+  }
+
+  async imagine(options: PostGeneratorOptions) {
+    const job = await this.queue.add(options);
+
+    return {
+      jobId: job.id.toString(),
+    };
   }
 }

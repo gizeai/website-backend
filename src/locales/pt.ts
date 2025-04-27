@@ -60,5 +60,8 @@ export const translation = {
     processing_video: "Transformando sua criação em vídeo — quase lá...",
     prompt_processed: "Sua criação está pronta para brilhar.",
     in_queue: "Quase lá! Posição {{position}}, em cerca de {{time}} segundos começamos.",
+    invalid_file_instructions:
+      "O arquivo {{name}} foi enviado, mas não encontramos nenhuma instrução pedindo por ele.",
+    job_not_found: "Nenhuma criação encontrada com esse ID",
   },
 } as const;
