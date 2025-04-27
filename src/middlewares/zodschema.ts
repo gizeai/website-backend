@@ -3,7 +3,6 @@ import { NextFunction, Request, Response } from "express";
 
 export default function zodschema(schema: ZodSchema) {
   return (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.body);
     const result = schema.safeParse(req.body);
 
     if (!result.success) {

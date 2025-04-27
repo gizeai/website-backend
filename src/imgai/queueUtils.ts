@@ -1,6 +1,6 @@
 import { Queue } from "bull";
-import { NotifyData } from "./ImgAI";
 import i18next from "@/utils/i18n";
+import { NotifyData } from "./PostGenerator";
 
 async function getQueuePosition(imageQueue: Queue, jobId: string) {
   const jobs = await imageQueue.getWaiting();

@@ -179,6 +179,7 @@ describe("POST /user/edit", () => {
       },
     });
 
+
     expect(res.status).toBe(200);
     expect(res.data).toHaveProperty("update");
     expect(res.data.update).toHaveProperty("name");
