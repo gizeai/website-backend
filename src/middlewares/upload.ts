@@ -61,17 +61,6 @@ function upload(formname: string, uploadLimitInMb = 3, maxFiles = 5) {
           return originalJson.call(this, body);
         };
 
-        const originalStatus = res.status;
-        res.status = function (code) {
-          if (code >= 400 && (req.uploads?.length ?? 0) > 0) {
-            for (const uplaod of req.uploads ?? []) {
-              UploadService.deleteForce(req.t, uplaod.id);
-            }
-          }
-
-          return originalStatus.call(this, code);
-        };
-
         next();
       } catch (error) {
         logger.error(error);

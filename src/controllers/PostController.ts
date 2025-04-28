@@ -124,14 +124,16 @@ const PostController = {
         return;
       }
 
-      const result = await PostService.stream(res, req.t, req.user as User, enterprise_id, job_id);
+      const result = await PostService.stream(res, job_id);
+
+      console.log(result);
 
       if (!result.success) {
         res.write(
           `data: ${JSON.stringify({
             status: "failed",
             data: {
-              message: result.data.error,
+              message: result.data,
             },
           })}\n\n`
         );
@@ -185,6 +187,67 @@ const PostController = {
       res.status(result.status).json(result.data);
     } catch (error) {
       logger.error(error);
+      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+    }
+  },
+
+  // POST STUDIO
+  studio: async (req: Request, res: Response) => {
+    try {
+      const enterprise_id = req.params.enterprise as string;
+      const post_id = req.params.post as string;
+      const post_index = Number(req.params.postindex as string);
+      const mask = req.uploads?.[0];
+
+      if (!mask) {
+        res.status(400).json({ error: req.t("post.missing_mask") });
+        return;
+      }
+
+      const enterprise = await EnterpriseService.get(req.t, enterprise_id);
+
+      if (!enterprise.success) {
+        if (mask) await deleteUploads(req.t, req.user as User, [mask]);
+        res.status(enterprise.status).json(enterprise.data);
+        return;
+      }
+
+      if (!(await isPermission(enterprise.data as Enterprise, req.user as User).isUser())) {
+        if (mask) await deleteUploads(req.t, req.user as User, [mask]);
+        res.status(401).json(req.t("general_erros.not_permission_to_action"));
+        return;
+      }
+
+      const result = await PostService.studio(
+        req.t,
+        res,
+        enterprise.data as Enterprise,
+        post_id,
+        post_index,
+        mask
+      );
+
+      if (!result.success) {
+        try {
+          if (mask) await deleteUploads(req.t, req.user as User, [mask]);
+        } catch (error) {
+          logger.error(error);
+        }
+        res.status(result.status).json(result.data);
+        return;
+      }
+
+      res.status(201).json(result.data);
+      return;
+    } catch (error) {
+      logger.error(error);
+
+      try {
+        if (req.uploads) await deleteUploads(req.t, req.user as User, req.uploads);
+      } catch (error) {
+        logger.error(error);
+      }
+
       res.status(500).json({ error: req.t("general_erros.internal_server_error") });
     }
   },

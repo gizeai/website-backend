@@ -1,12 +1,10 @@
 import InvoiceService from "@/services/InvoiceService";
 import logger from "@/utils/logger";
-import { Enterprise, Invoice } from "@prisma/client";
+import { Invoice } from "@prisma/client";
 import { Request, Response } from "express";
-import EnterpriseService from "@/services/EnterpriseService";
-import getPlanByKey from "@/utils/getPlanByKey";
 import MercadoPagoManager, { MercadoPagoPaymentStatus } from "@/managers/MercadoPagoManager";
-import prisma from "@/utils/prisma";
 import StripeManager from "@/managers/StripeManager";
+import PlanManager from "@/managers/PlanManager";
 
 const WebhookController = {
   //MERCADO PAGO WEBHOOK
@@ -37,72 +35,15 @@ const WebhookController = {
         const externalReference = payment.external_reference;
 
         if (externalReference) {
-          const invoices = await InvoiceService.getByExternalReference(req.t, externalReference);
-
-          if (!invoices.success) {
-            throw new Error((invoices.data as { error: string })?.error);
-          }
-
-          const allInvoices = invoices.data as Invoice[];
-
-          const notProcessedErros: string[] = [];
-
-          for await (const invoice of allInvoices) {
-            const status = payment.status as MercadoPagoPaymentStatus;
-            const value = payment.transaction_amount ?? invoice.value;
-            const useremail = payment.payer?.email ?? `ENTERPRISE_${invoice.enterpriseId}`;
-            const paymentMethod = payment.payment_method_id ?? "Not found";
-
-            if (status === "approved") {
-              const enterprise = await EnterpriseService.get(req.t, invoice.enterpriseId);
-
-              if (!enterprise.success) {
-                notProcessedErros.push((enterprise.data as { error: string }).error);
-                continue;
-              }
-
-              prisma.$transaction(async () => {
-                const result = await InvoiceService.pay(
-                  req.t,
-                  invoice.id,
-                  value,
-                  useremail,
-                  paymentMethod
-                );
-
-                if (!result.success) {
-                  throw new Error(result.data?.error || "Failed to pay invoice");
-                }
-
-                const enterpriseData = enterprise.data as Enterprise;
-
-                let expireAt = enterpriseData.expireAt.getTime() + 1000 * 60 * 60 * 24 * 30;
-
-                if (invoice.recurrence === "YEARLY") {
-                  expireAt = enterpriseData.expireAt.getTime() + 1000 * 60 * 60 * 24 * 365;
-                }
-
-                await EnterpriseService.editForce(req.t, invoice.enterpriseId, {
-                  expireAt: new Date(expireAt),
-                  plan: invoice.plan,
-                  credits: enterpriseData.credits + getPlanByKey(invoice.plan).credits,
-                  lastCreditsUpdate: new Date(),
-                  active: true,
-                });
-              });
-            } else if (
-              status === "cancelled" ||
-              status === "rejected" ||
-              status === "charged_back"
-            ) {
-              await InvoiceService.canceled(req.t, invoice.enterpriseId);
-            }
-          }
-
-          if (notProcessedErros.length > 0) {
-            logger.error(notProcessedErros);
-            return;
-          }
+          await PlanManager(req, {
+            externalReference: externalReference,
+            actualStatus: payment.status as MercadoPagoPaymentStatus,
+            successStatus: "approved",
+            amount: payment.transaction_amount,
+            useremail: payment.payer?.email,
+            paymentMethod: payment.payment_method_id ?? "Not found",
+            failedStatus: ["cancelled", "rejected", "charged_back"],
+          });
         }
       }
     } catch (error) {
@@ -135,78 +76,15 @@ const WebhookController = {
 
               res.status(200).send("OK");
 
-              const invoices = await InvoiceService.getByExternalReference(
-                req.t,
-                externalReference
-              );
-
-              if (!invoices.success) {
-                throw new Error(
-                  JSON.stringify({
-                    message: "Error getting invoice by external reference",
-                    externalReference,
-                    status: invoices.status,
-                    error: invoices.data,
-                  })
-                );
-              }
-
-              const allInvoices = invoices.data as Invoice[];
-              const notProcessedErros: string[] = [];
-
-              for await (const invoice of allInvoices) {
-                if (session.payment_status !== "paid") {
-                  continue;
-                }
-
-                const enterprise = await EnterpriseService.get(req.t, invoice.enterpriseId);
-
-                if (!enterprise.success) {
-                  notProcessedErros.push(
-                    (enterprise.data as { error: string }).error || "Failed to fetch enterprise"
-                  );
-                  continue;
-                }
-
-                prisma.$transaction(async () => {
-                  const value = session.amount_total ? session.amount_total / 100 : invoice.value;
-                  const useremail =
-                    session.customer_details?.email ?? `ENTERPRISE_${invoice.enterpriseId}`;
-                  const paymentMethod = session.payment_method_types?.[0] ?? "Not found";
-
-                  const result = await InvoiceService.pay(
-                    req.t,
-                    invoice.id,
-                    value,
-                    useremail,
-                    paymentMethod
-                  );
-
-                  if (!result.success) {
-                    throw new Error(result.data?.error || "Failed to pay invoice");
-                  }
-
-                  const enterpriseData = enterprise.data as Enterprise;
-
-                  let expireAt = enterpriseData.expireAt.getTime() + 1000 * 60 * 60 * 24 * 30;
-
-                  if (invoice.recurrence === "YEARLY") {
-                    expireAt = enterpriseData.expireAt.getTime() + 1000 * 60 * 60 * 24 * 365;
-                  }
-
-                  await EnterpriseService.editForce(req.t, invoice.enterpriseId, {
-                    expireAt: new Date(expireAt),
-                    plan: invoice.plan,
-                    credits: enterpriseData.credits + getPlanByKey(invoice.plan).credits,
-                    lastCreditsUpdate: new Date(),
-                    active: true,
-                  });
-                });
-              }
-
-              if (notProcessedErros.length > 0) {
-                throw new Error(notProcessedErros.join(", "));
-              }
+              await PlanManager(req, {
+                externalReference: externalReference,
+                actualStatus: session.payment_status,
+                successStatus: "paid",
+                amount: session.amount_total ? session.amount_total / 100 : undefined,
+                useremail: session.customer_details?.email ?? undefined,
+                paymentMethod: session.payment_method_types?.[0] ?? "Not found",
+                failedStatus: [],
+              });
             }
             break;
 

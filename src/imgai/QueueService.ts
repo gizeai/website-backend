@@ -16,7 +16,8 @@ const imageQueue = Queue<PostGeneratorOptions>("image-generation", {
 });
 
 export default function QueueService(
-  notifyClient: (jobId: string, data: NotifyClientData) => void
+  notifyClient: (jobId: string, data: NotifyClientData) => void,
+  proccess = true
 ) {
   const proccessManagerService = new ProccessManagerService();
 
@@ -41,35 +42,38 @@ export default function QueueService(
     );
   });
 
-  imageQueue.process(ProccessManagerService.MAX_QUEUE_PROCCESSING, async job => {
-    const jobID = job.id.toString();
-    const interval = setInterval(() => notifyClient(jobID, { status: "ping" }), 10000);
+  if (proccess) {
+    console.log("PROCESSO: ", proccess);
+    imageQueue.process(ProccessManagerService.MAX_QUEUE_PROCCESSING, async job => {
+      const jobID = job.id.toString();
+      const interval = setInterval(() => notifyClient(jobID, { status: "ping" }), 10000);
 
-    const timeout = setTimeout(() => {
-      throw new Error("Job timeout");
-    }, 240000);
+      const timeout = setTimeout(() => {
+        throw new Error("Job timeout");
+      }, 240000);
 
-    try {
-      proccessManagerService.startProcessing();
-      const matchingTemplate = new MatchingTemplate(job, job.data.postId);
-      await matchingTemplate.proccess(notifyClient);
-      proccessManagerService.endProcessing();
-    } catch (error) {
-      logger.error(
-        { error, jobId: job.id, options: job.data },
-        "Failed to process image generation"
-      );
-      notifyClient(jobID, {
-        status: "failed",
-        data: {
-          message: i18next.t("general_erros.internal_server_error"),
-        },
-      });
-    } finally {
-      clearInterval(interval);
-      clearTimeout(timeout);
-    }
-  });
+      try {
+        proccessManagerService.startProcessing();
+        const matchingTemplate = new MatchingTemplate(job, job.data.postId, job.data.enterpriseId);
+        await matchingTemplate.proccess(notifyClient);
+        proccessManagerService.endProcessing();
+      } catch (error) {
+        logger.error(
+          { error, jobId: job.id, options: job.data },
+          "Failed to process image generation"
+        );
+        notifyClient(jobID, {
+          status: "failed",
+          data: {
+            message: i18next.t("general_erros.internal_server_error"),
+          },
+        });
+      } finally {
+        clearInterval(interval);
+        clearTimeout(timeout);
+      }
+    });
+  }
 
   return imageQueue;
 }

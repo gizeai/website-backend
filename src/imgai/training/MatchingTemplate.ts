@@ -4,27 +4,51 @@ import { NotifyClientData, PostGeneratorOptions } from "../PostGenerator";
 import ImgV0 from "./Imgv0/ImgV0";
 import prisma from "@/utils/prisma";
 import openAiToMyUploadSystem from "@/utils/openAiToMyUploadSystem";
+import EnterpriseService from "@/services/EnterpriseService";
+import EnterpriseMetrics from "@/managers/EnterpriseMetrics";
+import logger from "@/utils/logger";
 
 const MODEL = ImgV0;
 
 export default class MatchingTemplate {
   private job: Job<PostGeneratorOptions>;
+  private enterpriseId: string;
   private postID: string;
   static MODEL_VERSION = MODEL.VERSION;
+  static MODEL = MODEL;
 
-  constructor(job: Job<PostGeneratorOptions>, postId: string) {
+  constructor(job: Job<PostGeneratorOptions>, postId: string, enterpriseId: string) {
     this.job = job;
     this.postID = postId;
+    this.enterpriseId = enterpriseId;
   }
 
-  private saveInPrismaPost(
+  private async saveInPrismaPost(
     postId: string,
     credits: number,
     attachment: string[],
     body: string,
-    tags: string[]
+    tags: string[],
+    isVideo: boolean
   ) {
-    return prisma.post.update({
+    try {
+      const enterprise = await prisma.enterprise.findUnique({
+        where: {
+          id: this.enterpriseId,
+        },
+      });
+
+      if (enterprise) {
+        const enterpriseMetrics = new EnterpriseMetrics(enterprise);
+        enterpriseMetrics.increment({ posts: 1, credits: credits, videos: isVideo ? 1 : 0 });
+        await enterpriseMetrics.save();
+      }
+    } catch (error) {
+      logger.error(error);
+    }
+
+    await EnterpriseService.reduceCredits(this.enterpriseId, credits);
+    await prisma.post.update({
       where: {
         id: postId,
       },
@@ -108,7 +132,7 @@ export default class MatchingTemplate {
         return;
       }
 
-      await this.saveInPrismaPost(this.postID, 1, [uploadUrl], description, tags);
+      await this.saveInPrismaPost(this.postID, 1, [uploadUrl], description, tags, false);
 
       notifyClient(jobID, {
         status: "completed",
@@ -171,7 +195,14 @@ export default class MatchingTemplate {
         return;
       }
 
-      await this.saveInPrismaPost(this.postID, images.length, uploadImages, description, tags);
+      await this.saveInPrismaPost(
+        this.postID,
+        images.length,
+        uploadImages,
+        description,
+        tags,
+        false
+      );
 
       notifyClient(jobID, {
         status: "completed",
@@ -198,7 +229,7 @@ export default class MatchingTemplate {
       //TODO: Criar um vídeo com a imagem gerada.
       const video = image;
 
-      //TODO: Usar o saveInPrismaPost
+      //TODO: Usar o saveInPrismaPost e usar o EnterpriseMetrics
 
       notifyClient(jobID, {
         status: "completed",

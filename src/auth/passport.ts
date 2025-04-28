@@ -57,7 +57,7 @@ passport.use(
 //       clientSecret: "MICROSOFT_CLIENT_SECRET",
 //       responseType: "code",
 //       responseMode: "query",
-//       redirectUrl: "http://localhost:3000/auth/microsoft/callback",
+//       redirectUrl: `${process.env.DOMAIN}/api/auth/microsoft/callback`,
 //       scope: ["profile", "email", "openid"],
 //       passReqToCallback: false,
 //     },

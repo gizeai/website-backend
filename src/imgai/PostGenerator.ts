@@ -4,11 +4,15 @@ import { Queue } from "bull";
 import i18next from "@/utils/i18n";
 import ProccessManagerService from "./ProccessManagerService";
 import queueUtils from "./queueUtils";
+import { Upload } from "@prisma/client";
+import * as fs from "fs";
+import MatchingTemplate from "./training/MatchingTemplate";
 
 const clients = new Map<string, Response>();
 
 export interface PostGeneratorOptions {
   postId: string;
+  enterpriseId: string;
   description: string;
   type: "image" | "video" | "carrousel";
   carrousel_count?: number;
@@ -32,9 +36,9 @@ export default class PostGenerator {
   private res: Response;
   private queue: Queue<PostGeneratorOptions>;
 
-  constructor(res: Response) {
+  constructor(res: Response, streamViewer: boolean) {
     this.res = res;
-    this.queue = QueueService(this.notifyClient);
+    this.queue = QueueService(this.notifyClient, !streamViewer);
   }
 
   private notifyClient(jobId: string, data: NotifyClientData) {
@@ -52,6 +56,10 @@ export default class PostGenerator {
     const job = await this.queue.getJob(jobid);
 
     if (!job) {
+      throw new Error(i18next.t("post.job_not_found"));
+    }
+
+    if (job.finishedOn) {
       throw new Error(i18next.t("post.job_not_found"));
     }
 
@@ -86,5 +94,13 @@ export default class PostGenerator {
     return {
       jobId: job.id.toString(),
     };
+  }
+
+  async studio(prompt: string, file: Upload, mask: Upload) {
+    const model = new MatchingTemplate.MODEL();
+    const fileFs = fs.createReadStream(file.storedLocation);
+    const maskFs = fs.createReadStream(mask.storedLocation);
+
+    return await model.studioEdit(prompt, fileFs, maskFs);
   }
 }

@@ -18,18 +18,25 @@ export default class ImageV0 {
       files.push(file);
     }
 
-    const response = await openai.images.edit({
-      model: "dall-e-2",
-      prompt: `
-          Crie uma imagem com o estilo ${art_model}, e siga as instruções abaixo:
+    const prompt = `
+          Você é uma inteligência artificial especializada em marketing digital e criação de conteúdo para redes sociais. Sua tarefa é gerar uma **imagem** para uma postagem no Instagram, com base nas instruções fornecidas pelo usuário.
+
+          Gere uma imagem profissional e incrível com base nas instruções, faça algo que chame a atenção para os seguidores.
+
+          O estilo da imagem é ${art_model}, siga as instruções abaixo:
     
           ${instructions
             .map(instruction => {
               return `- ${instruction.description}`;
             })
             .join("\n")}
-          })
-        `,
+        `;
+
+    console.log(prompt);
+
+    const response = await openai.images.edit({
+      model: "dall-e-2",
+      prompt: prompt,
       image: files[0], //TODO: Para o modelo do gpt-image-1, ele aceita uma array
       // quality: "medium", //TODO: Para o modelo do gpt-image-1, elee aceita a qualidade
     });

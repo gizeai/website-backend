@@ -619,6 +619,25 @@ const EnterpriseService = {
       data: { updated: true },
     };
   },
+
+  reduceCredits: async (id: string, count: number) => {
+    await prisma.enterprise.update({
+      where: {
+        id: id,
+      },
+      data: {
+        credits: {
+          decrement: count,
+        },
+      },
+    });
+
+    return {
+      success: true,
+      status: 200,
+      data: { reduce: true },
+    };
+  },
 };
 
 export default EnterpriseService;

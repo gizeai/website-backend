@@ -1,3 +1,4 @@
+import logger from "@/utils/logger";
 import prisma from "@/utils/prisma";
 import { User } from "@prisma/client";
 import * as fs from "fs";
@@ -84,6 +85,28 @@ const UploadService = {
     };
   },
 
+  getUploadPrisma: async (t: Translaction, id: string) => {
+    const upload = await prisma.upload.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!upload) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("upload.file_not_found") },
+      };
+    }
+
+    return {
+      success: true,
+      status: 200,
+      data: upload,
+    };
+  },
+
   delete: async (t: Translaction, user: User | undefined, id: string) => {
     const upload = await prisma.upload.findUnique({
       where: {
@@ -145,8 +168,8 @@ const UploadService = {
           id: upload.id,
         },
       });
-    } catch {
-      /* empty */
+    } catch (error) {
+      logger.error(error);
     }
 
     if (fs.existsSync(upload.storedLocation)) {

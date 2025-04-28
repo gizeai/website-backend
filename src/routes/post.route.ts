@@ -9,7 +9,7 @@ import upload from "@/middlewares/upload";
 const postRoute = Router();
 const BASE = "/:enterprise/post";
 
-//POST /api/post/create
+//POST /api/:enterprise/post/create
 const postCreateSchema = z.object({
   title: z.string().min(5, i18next.t("post.invalid_title")),
   description: z
@@ -32,7 +32,7 @@ const postCreateSchema = z.object({
           .string()
           .min(20, i18next.t("post.invalid_instruction_description"))
           .max(300, i18next.t("post.invalid_max_instruction_description")),
-        fileName: z.string(),
+        fileName: z.string().optional(),
       })
     );
 
@@ -48,9 +48,24 @@ postRoute.post(
   PostController.create
 );
 
+//GET /api/:enterprise/post/stream/:job
 postRoute.get(`${BASE}/stream/:job`, authentication(), PostController.stream);
 
+//GET /api/:enterprise/post
 postRoute.get(`${BASE}`, authentication(), PostController.get);
+
+//POST /api/:enterprise/post/studio/:post/:postindex
+const postStudioShema = z.object({
+  mask: z.any(),
+});
+
+postRoute.post(
+  `${BASE}/studio/:post/:postindex`,
+  upload("mask"),
+  zodschema(postStudioShema),
+  authentication(),
+  PostController.studio
+);
 
 export default {
   path: "/enterprise",

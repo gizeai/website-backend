@@ -63,5 +63,8 @@ export const translation = {
     invalid_file_instructions:
       "O arquivo {{name}} foi enviado, mas não encontramos nenhuma instrução pedindo por ele.",
     job_not_found: "Nenhuma criação encontrada com esse ID",
+    not_found: "Não existe nenhum post com esse ID",
+    attachment_not_found: "O anexo especificado não foi encontrado",
+    missing_mask: "Você deve fornecer uma máscara para essa criação.",
   },
 } as const;
