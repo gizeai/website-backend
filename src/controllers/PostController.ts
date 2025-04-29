@@ -1,6 +1,7 @@
 import EnterpriseService from "@/services/EnterpriseService";
 import PostService, { ArtsModelsTypes, TypePostType } from "@/services/PostService";
 import UploadService from "@/services/UploadService";
+import errorToString from "@/utils/errorToString";
 import isPermission from "@/utils/isPermission";
 import logger from "@/utils/logger";
 import { Enterprise, Upload, User } from "@prisma/client";
@@ -79,7 +80,7 @@ const PostController = {
         logger.error(error);
       }
 
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 
@@ -153,7 +154,7 @@ const PostController = {
         `data: ${JSON.stringify({
           status: "failed",
           data: {
-            message: req.t("general_erros.internal_server_error"),
+            message: errorToString(error),
           },
         })}\n\n`
       );
@@ -187,7 +188,7 @@ const PostController = {
       res.status(result.status).json(result.data);
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 
@@ -248,7 +249,7 @@ const PostController = {
         logger.error(error);
       }
 
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 };

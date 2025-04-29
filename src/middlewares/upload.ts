@@ -1,4 +1,5 @@
 import UploadService from "@/services/UploadService";
+import errorToString from "@/utils/errorToString";
 import logger from "@/utils/logger";
 import { User } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
@@ -64,7 +65,7 @@ function upload(formname: string, uploadLimitInMb = 3, maxFiles = 5) {
         next();
       } catch (error) {
         logger.error(error);
-        res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+        res.status(500).json({ error: errorToString(error) });
       }
     });
   };

@@ -1,4 +1,5 @@
 import UploadService from "@/services/UploadService";
+import errorToString from "@/utils/errorToString";
 import logger from "@/utils/logger";
 import { User } from "@prisma/client";
 import { Request, Response } from "express";
@@ -33,7 +34,7 @@ const UploadController = {
         .send(file);
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 
@@ -52,7 +53,7 @@ const UploadController = {
       res.status(result.status).json(result.data);
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 };

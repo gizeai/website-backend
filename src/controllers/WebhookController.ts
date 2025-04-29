@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 import MercadoPagoManager, { MercadoPagoPaymentStatus } from "@/managers/MercadoPagoManager";
 import StripeManager from "@/managers/StripeManager";
 import PlanManager from "@/managers/PlanManager";
+import errorToString from "@/utils/errorToString";
 
 const WebhookController = {
   //MERCADO PAGO WEBHOOK
@@ -48,7 +49,7 @@ const WebhookController = {
       }
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 
@@ -127,7 +128,7 @@ const WebhookController = {
       }
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 };

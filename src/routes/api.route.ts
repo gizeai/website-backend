@@ -1,3 +1,4 @@
+import errorToString from "@/utils/errorToString";
 import logger from "@/utils/logger";
 import prisma from "@/utils/prisma";
 import { Router } from "express";
@@ -55,7 +56,7 @@ FROM pg_stat_activity WHERE backend_type = 'client backend';`;
     });
   } catch (error) {
     logger.error(error);
-    res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+    res.status(500).json({ error: errorToString(error) });
   } finally {
     await prisma.$disconnect();
   }

@@ -4,6 +4,7 @@ import EnterpriseService from "@/services/EnterpriseService";
 import InvoiceService from "@/services/InvoiceService";
 import { Languages } from "@/types/langs";
 import { Quotes } from "@/types/quotes";
+import errorToString from "@/utils/errorToString";
 import logger from "@/utils/logger";
 import { Enterprise, User } from "@prisma/client";
 import { Request, Response } from "express";
@@ -52,7 +53,7 @@ const EnterpriseController = {
       }
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 
@@ -73,7 +74,7 @@ const EnterpriseController = {
       res.status(200).json(enterprises.data);
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 
@@ -104,7 +105,7 @@ const EnterpriseController = {
       res.status(200).json(enterpriseData);
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 
@@ -146,7 +147,7 @@ const EnterpriseController = {
       res.status(200).json({ update: true });
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 
@@ -164,7 +165,7 @@ const EnterpriseController = {
       res.status(result.status).json(result.data);
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 
@@ -181,7 +182,7 @@ const EnterpriseController = {
       res.status(result.status).json(result.data);
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 
@@ -206,7 +207,7 @@ const EnterpriseController = {
       res.status(result.status).json(result.data);
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 
@@ -224,7 +225,7 @@ const EnterpriseController = {
       res.status(result.status).json(result.data);
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 
@@ -249,7 +250,7 @@ const EnterpriseController = {
       res.status(result.status).json(result.data);
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 };

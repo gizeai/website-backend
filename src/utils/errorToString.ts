@@ -1,0 +1,41 @@
+import { AxiosError } from "axios";
+import { ZodError } from "zod";
+
+interface GraphQLErrorShape {
+  message: string;
+  extensions?: { code?: string };
+}
+
+export default function errorToString(error: unknown): string {
+  if (error instanceof ZodError) {
+    return error.issues.map(({ path, message }) => `${path[0] ?? ""} ${message}`.trim()).join(", ");
+  }
+
+  if (error instanceof AxiosError) {
+    const data = error.response?.data;
+    return (
+      (data?.error as string) ??
+      (data?.message as string) ??
+      (Array.isArray(data)
+        ? data.map((e: { message?: string }) => e.message || String(e)).join("; ")
+        : undefined) ??
+      error.message
+    );
+  }
+
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    Array.isArray((error as { graphQLErrors: GraphQLErrorShape[] }).graphQLErrors)
+  ) {
+    const gql = (error as { graphQLErrors: GraphQLErrorShape[] })
+      .graphQLErrors as GraphQLErrorShape[];
+    return gql.map(e => e.message).join(", ");
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return String(error);
+}

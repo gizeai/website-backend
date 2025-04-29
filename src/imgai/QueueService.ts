@@ -2,9 +2,9 @@ import Queue from "bull";
 import { NotifyClientData, PostGeneratorOptions } from "./PostGenerator";
 import queueUtils from "./queueUtils";
 import logger from "@/utils/logger";
-import i18next from "@/utils/i18n";
 import ProccessManagerService from "./ProccessManagerService";
 import MatchingTemplate from "./training/MatchingTemplate";
+import errorToString from "@/utils/errorToString";
 
 const imageQueue = Queue<PostGeneratorOptions>("image-generation", {
   redis: {
@@ -65,7 +65,7 @@ export default function QueueService(
         notifyClient(jobID, {
           status: "failed",
           data: {
-            message: i18next.t("general_erros.internal_server_error"),
+            message: errorToString(error),
           },
         });
       } finally {

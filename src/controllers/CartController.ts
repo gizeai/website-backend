@@ -2,6 +2,7 @@ import { PlansNamesTypes } from "@/constants/PLANS";
 import Cart, { paymentsType } from "@/managers/Cart";
 import InvoiceService from "@/services/InvoiceService";
 import { Currencys } from "@/types/quotes";
+import errorToString from "@/utils/errorToString";
 import logger from "@/utils/logger";
 import { Invoice } from "@prisma/client";
 import { Request, Response } from "express";
@@ -55,7 +56,7 @@ const CartController = {
       });
     } catch (error) {
       logger.error(error);
-      res.status(500).json({ error: req.t("general_erros.internal_server_error") });
+      res.status(500).json({ error: errorToString(error) });
     }
   },
 };
