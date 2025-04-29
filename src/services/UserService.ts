@@ -362,7 +362,7 @@ const UserService = {
     }
 
     if (upload) {
-      const url = mounthUploadURL(upload);
+      const url = mounthUploadURL(upload, "external-uploads");
       edit.avatarUrl = url;
     }
 

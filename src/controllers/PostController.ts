@@ -2,29 +2,23 @@ import EnterpriseService from "@/services/EnterpriseService";
 import PostService, { ArtsModelsTypes, TypePostType } from "@/services/PostService";
 import UploadService from "@/services/UploadService";
 import errorToString from "@/utils/errorToString";
+import getFilesRequest from "@/utils/getFilesRequest";
 import isPermission from "@/utils/isPermission";
 import logger from "@/utils/logger";
 import { Enterprise, Upload, User } from "@prisma/client";
 import { Request, Response } from "express";
-import { TFunction } from "i18next";
-
-type Translaction = TFunction<"translation", undefined>;
-async function deleteUploads(t: Translaction, user: User, files: Upload[]) {
-  for await (const file of files) {
-    await UploadService.delete(t, user, file.id);
-  }
-}
 
 const PostController = {
   //CREATE ENTERPRISE
   create: async (req: Request, res: Response) => {
+    const files: Upload[] = [];
+
     try {
       const enterprise_id = req.params.enterprise as string;
       const title = req.body.title as string;
       const description = req.body.description as string;
       const art_model = req.body.art_model as ArtsModelsTypes;
       const type = req.body.type as TypePostType;
-      const files = req.uploads;
       const carrousel_count = req.body.carrousel_count as number | undefined;
       const instructions = JSON.parse(req.body.instructions) as {
         description: string;
@@ -34,15 +28,23 @@ const PostController = {
       const enterprise = await EnterpriseService.get(req.t, enterprise_id);
 
       if (!enterprise.success) {
-        if (files) await deleteUploads(req.t, req.user as User, files);
         res.status(enterprise.status).json(enterprise.data);
         return;
       }
 
       if (!(await isPermission(enterprise.data as Enterprise, req.user as User).isUser())) {
-        if (files) await deleteUploads(req.t, req.user as User, files);
         res.status(401).json(req.t("general_erros.not_permission_to_action"));
         return;
+      }
+
+      if (req.files) {
+        for await (const file of getFilesRequest(req) ?? []) {
+          const up = await UploadService.upload(req.user as User, file, "external-uploads");
+
+          if (up) {
+            files.push(up);
+          }
+        }
       }
 
       const result = await PostService.create(
@@ -61,7 +63,13 @@ const PostController = {
 
       if (!result.success) {
         try {
-          if (files) await deleteUploads(req.t, req.user as User, files);
+          if (files.length > 0) {
+            await UploadService.deleteManyForce(
+              req.t,
+              files.map(n => n.id),
+              "external-uploads"
+            );
+          }
         } catch (error) {
           logger.error(error);
         }
@@ -75,7 +83,13 @@ const PostController = {
       logger.error(error);
 
       try {
-        if (req.uploads) await deleteUploads(req.t, req.user as User, req.uploads);
+        if (files.length > 0) {
+          await UploadService.deleteManyForce(
+            req.t,
+            files.map(n => n.id),
+            "external-uploads"
+          );
+        }
       } catch (error) {
         logger.error(error);
       }
@@ -144,12 +158,6 @@ const PostController = {
     } catch (error) {
       logger.error(error);
 
-      try {
-        if (req.uploads) await deleteUploads(req.t, req.user as User, req.uploads);
-      } catch (error) {
-        logger.error(error);
-      }
-
       res.write(
         `data: ${JSON.stringify({
           status: "failed",
@@ -198,7 +206,7 @@ const PostController = {
       const enterprise_id = req.params.enterprise as string;
       const post_id = req.params.post as string;
       const post_index = Number(req.params.postindex as string);
-      const mask = req.uploads?.[0];
+      const mask = getFilesRequest(req)?.[0];
 
       if (!mask) {
         res.status(400).json({ error: req.t("post.missing_mask") });
@@ -208,14 +216,19 @@ const PostController = {
       const enterprise = await EnterpriseService.get(req.t, enterprise_id);
 
       if (!enterprise.success) {
-        if (mask) await deleteUploads(req.t, req.user as User, [mask]);
         res.status(enterprise.status).json(enterprise.data);
         return;
       }
 
       if (!(await isPermission(enterprise.data as Enterprise, req.user as User).isUser())) {
-        if (mask) await deleteUploads(req.t, req.user as User, [mask]);
         res.status(401).json(req.t("general_erros.not_permission_to_action"));
+        return;
+      }
+
+      const mask_upload = await UploadService.upload(req.user as User, mask, "external-uploads");
+
+      if (!mask_upload) {
+        res.status(400).json({ error: req.t("post.missing_mask") });
         return;
       }
 
@@ -225,12 +238,12 @@ const PostController = {
         enterprise.data as Enterprise,
         post_id,
         post_index,
-        mask
+        mask_upload
       );
 
       if (!result.success) {
         try {
-          if (mask) await deleteUploads(req.t, req.user as User, [mask]);
+          if (mask) await UploadService.deleteForce(req.t, mask_upload.id, "external-uploads");
         } catch (error) {
           logger.error(error);
         }
@@ -242,12 +255,6 @@ const PostController = {
       return;
     } catch (error) {
       logger.error(error);
-
-      try {
-        if (req.uploads) await deleteUploads(req.t, req.user as User, req.uploads);
-      } catch (error) {
-        logger.error(error);
-      }
 
       res.status(500).json({ error: errorToString(error) });
     }

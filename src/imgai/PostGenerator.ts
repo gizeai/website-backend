@@ -5,8 +5,8 @@ import i18next from "@/utils/i18n";
 import ProccessManagerService from "./ProccessManagerService";
 import queueUtils from "./queueUtils";
 import { Upload } from "@prisma/client";
-import * as fs from "fs";
 import MatchingTemplate from "./training/MatchingTemplate";
+import UploadService from "@/services/UploadService";
 
 const clients = new Map<string, Response>();
 
@@ -98,9 +98,13 @@ export default class PostGenerator {
 
   async studio(prompt: string, file: Upload, mask: Upload) {
     const model = new MatchingTemplate.MODEL();
-    const fileFs = fs.createReadStream(file.storedLocation);
-    const maskFs = fs.createReadStream(mask.storedLocation);
+    const fileFs = await UploadService.download(file.storedLocation, "external-uploads");
+    const maskFs = await UploadService.download(mask.storedLocation, "external-uploads");
 
-    return await model.studioEdit(prompt, fileFs, maskFs);
+    if (!fileFs.data || !maskFs.data) {
+      throw new Error(i18next.t("post.file_not_found"));
+    }
+
+    return await model.studioEdit(prompt, fileFs.data, maskFs.data);
   }
 }

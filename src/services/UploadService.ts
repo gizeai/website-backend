@@ -1,27 +1,76 @@
+import errorToString from "@/utils/errorToString";
 import logger from "@/utils/logger";
 import prisma from "@/utils/prisma";
+import supabase from "@/utils/supabase";
 import { User } from "@prisma/client";
-import * as fs from "fs";
 import { TFunction } from "i18next";
 
 type Translaction = TFunction<"translation", undefined>;
+export type buckets = "external-uploads";
 
 const UploadService = {
-  upload: async (user: User | undefined, file: Express.Multer.File) => {
+  upload: async (user: User | undefined, file: Express.Multer.File, bucket: buckets) => {
     let userid = "";
 
     if (user) {
       userid = user.id;
     }
 
+    const filename = `${Date.now()}_${file.originalname}`;
+    const filePath = `uploads/${filename}`;
+
+    const { error } = await supabase.storage.from(bucket).upload(filePath, file.buffer, {
+      contentType: file.mimetype,
+    });
+
+    if (error) {
+      logger.error(error);
+      throw new Error(errorToString(error));
+    }
+
     const upload = await prisma.upload.create({
       data: {
-        fileName: file.filename,
+        fileName: filename,
         userId: userid,
         originalName: file.originalname,
         mimeType: file.mimetype,
         size: file.size,
-        storedLocation: file.path,
+        storedLocation: filePath,
+      },
+    });
+
+    return upload;
+  },
+
+  uploadFromBuffer: async (
+    user: User | undefined,
+    file: Buffer,
+    filename: string,
+    mimeType: string,
+    bucket: buckets
+  ) => {
+    let userid = "";
+
+    if (user) {
+      userid = user.id;
+    }
+
+    const filePath = `uploads/${Date.now()}_${filename}`;
+    const { error } = await supabase.storage.from(bucket).upload(filePath, file);
+
+    if (error) {
+      logger.error(error);
+      return;
+    }
+
+    const upload = await prisma.upload.create({
+      data: {
+        fileName: filename,
+        userId: userid,
+        originalName: filename,
+        mimeType: mimeType,
+        size: file.length,
+        storedLocation: filePath,
       },
     });
 
@@ -56,7 +105,7 @@ const UploadService = {
     return upload;
   },
 
-  get: async (t: Translaction, id: string) => {
+  get: async (t: Translaction, id: string, bucket: buckets) => {
     const upload = await prisma.upload.findUnique({
       where: {
         id: id,
@@ -71,17 +120,27 @@ const UploadService = {
       };
     }
 
-    const file = fs.readFileSync(upload.storedLocation);
+    const file = await supabase.storage.from(bucket).download(upload.storedLocation);
 
     return {
       success: true,
       status: 200,
       data: {
-        file: file,
+        file: file.data,
         fileName: upload.fileName,
         mimeType: upload.mimeType,
         size: upload.size,
       },
+    };
+  },
+
+  async download(path: string, bucket: buckets) {
+    const file = await supabase.storage.from(bucket).download(path);
+
+    return {
+      success: true,
+      status: 200,
+      data: file.data,
     };
   },
 
@@ -107,7 +166,7 @@ const UploadService = {
     };
   },
 
-  delete: async (t: Translaction, user: User | undefined, id: string) => {
+  delete: async (t: Translaction, user: User | undefined, id: string, bucket: buckets) => {
     const upload = await prisma.upload.findUnique({
       where: {
         id: id,
@@ -130,8 +189,15 @@ const UploadService = {
       };
     }
 
-    if (fs.existsSync(upload.storedLocation)) {
-      fs.unlinkSync(upload.storedLocation);
+    const { error } = await supabase.storage.from(bucket).remove([upload.storedLocation]);
+
+    if (error) {
+      logger.error(error);
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.internal_server_error") },
+      };
     }
 
     await prisma.upload.delete({
@@ -147,7 +213,7 @@ const UploadService = {
     };
   },
 
-  deleteForce: async (t: Translaction, id: string) => {
+  deleteForce: async (t: Translaction, id: string, bucket: buckets) => {
     const upload = await prisma.upload.findUnique({
       where: {
         id: id,
@@ -162,6 +228,17 @@ const UploadService = {
       };
     }
 
+    const { error } = await supabase.storage.from(bucket).remove([upload.storedLocation]);
+
+    if (error) {
+      logger.error(error);
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.internal_server_error") },
+      };
+    }
+
     try {
       await prisma.upload.delete({
         where: {
@@ -172,9 +249,42 @@ const UploadService = {
       logger.error(error);
     }
 
-    if (fs.existsSync(upload.storedLocation)) {
-      fs.unlinkSync(upload.storedLocation);
+    return {
+      success: true,
+      status: 200,
+      data: { deleted: true },
+    };
+  },
+
+  deleteManyForce: async (t: Translaction, ids: string[], bucket: buckets) => {
+    const deleteds = await prisma.upload.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+
+    const { error } = await supabase.storage
+      .from(bucket)
+      .remove(deleteds.map(rm => rm.storedLocation));
+
+    if (error) {
+      logger.error(error);
+      return {
+        success: false,
+        status: 403,
+        data: { error: t("general_erros.internal_server_error") },
+      };
     }
+
+    await prisma.upload.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
 
     return {
       success: true,

@@ -1,9 +1,11 @@
 import EnterpriseService from "@/services/EnterpriseService";
 import InvoiceService from "@/services/InvoiceService";
+import UploadService from "@/services/UploadService";
 import UserService from "@/services/UserService";
 import errorToString from "@/utils/errorToString";
+import getFilesRequest from "@/utils/getFilesRequest";
 import logger from "@/utils/logger";
-import { User } from "@prisma/client";
+import { Upload, User } from "@prisma/client";
 import { Request, Response } from "express";
 
 const UserController = {
@@ -142,11 +144,17 @@ const UserController = {
   edit: async (req: Request, res: Response) => {
     try {
       const userId = req.user as User;
-      const upload = req.uploads?.[0];
+      const upload = getFilesRequest(req)?.[0];
       const userName = req.body.name as string | undefined;
       const password = req.body.password as string | undefined;
 
-      const result = await UserService.edit(req.t, userId, userName, password, upload);
+      let up: Upload | undefined;
+
+      if (upload) {
+        up = await UploadService.upload(req.user as User, upload, "external-uploads");
+      }
+
+      const result = await UserService.edit(req.t, userId, userName, password, up);
 
       if (!result.success) {
         res.status(result.status).json(result.data);

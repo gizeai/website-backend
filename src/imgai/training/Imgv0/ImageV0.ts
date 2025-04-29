@@ -1,6 +1,6 @@
 import OpenAI, { toFile } from "openai";
 import { FileLike } from "openai/uploads";
-import * as fs from "fs";
+import UploadService from "@/services/UploadService";
 
 export default class ImageV0 {
   static async generate(
@@ -11,7 +11,13 @@ export default class ImageV0 {
     const files: FileLike[] = [];
 
     for await (const instruction of instructions) {
-      const file = await toFile(fs.createReadStream(instruction.filePath), null, {
+      const blob = await UploadService.download(instruction.filePath, "external-uploads");
+
+      if (!blob.data) {
+        throw new Error("Image not found");
+      }
+
+      const file = await toFile(blob.data, null, {
         type: "image/png",
       });
 

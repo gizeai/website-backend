@@ -1,7 +1,6 @@
 import UploadService from "@/services/UploadService";
 import axios from "axios";
 import path from "path";
-import * as fs from "fs";
 import mime from "mime-types";
 import logger from "./logger";
 import mounthUploadURL from "./mounthUploadURL";
@@ -20,14 +19,19 @@ export default async function openAiToMyUploadSystem(url: string) {
     const fileName = `file-${Date.now()}.${extension}`;
     const filePath = path.join(path.resolve(__dirname, "..", "..", "uploads"), fileName);
 
-    fs.writeFileSync(filePath, fileBuffer);
+    await UploadService.uploadFromBuffer(
+      undefined,
+      fileBuffer,
+      fileName,
+      contentType,
+      "external-uploads"
+    );
 
-    const stats = fs.statSync(filePath);
     const fileInfo = {
       filename: fileName,
       originalName: baseName,
       mimetype: contentType,
-      size: stats.size,
+      size: fileBuffer.length,
       local: filePath,
     };
 
@@ -40,7 +44,7 @@ export default async function openAiToMyUploadSystem(url: string) {
       path.resolve(fileInfo.local)
     );
 
-    return mounthUploadURL(upload);
+    return mounthUploadURL(upload, "external-uploads");
   } catch (error) {
     logger.error("Erro ao baixar ou enviar o arquivo:", error);
     return null;

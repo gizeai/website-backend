@@ -27,6 +27,8 @@ const envs = [
   "REDIS_PORT",
   "REDIS_PASSWORD",
   "REDIS_TLS",
+  "SUPABASE_ENDPOINT",
+  "SUPABASE_SECRET_KEY",
 ];
 
 const notfound: string[] = [];

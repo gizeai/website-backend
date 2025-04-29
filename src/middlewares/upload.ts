@@ -1,23 +1,8 @@
-import UploadService from "@/services/UploadService";
-import errorToString from "@/utils/errorToString";
-import logger from "@/utils/logger";
-import { User } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
-import path from "path";
-
-const storage = multer.diskStorage({
-  destination: (Request, filename, cb) => {
-    cb(null, path.resolve(__dirname, "..", "..", "uploads"));
-  },
-
-  filename: (Request, file, cb) => {
-    const filename = Date.now() + "_" + path.extname(file.originalname);
-    cb(null, filename);
-  },
-});
 
 function upload(formname: string, uploadLimitInMb = 3, maxFiles = 5) {
+  const storage = multer.memoryStorage();
   const uploadMiddleware = multer({
     storage,
     limits: {
@@ -37,36 +22,7 @@ function upload(formname: string, uploadLimitInMb = 3, maxFiles = 5) {
         return;
       }
 
-      const files = req.files as Express.Multer.File[] | undefined;
-
-      if (!files || files.length === 0) {
-        next();
-        return;
-      }
-
-      try {
-        const uploads = await Promise.all(
-          files.map(file => UploadService.upload((req.user as User) ?? undefined, file))
-        );
-        req.uploads = uploads;
-
-        const originalJson = res.json;
-
-        res.json = function (body) {
-          if (body && body.error && (req.uploads?.length ?? 0) > 0) {
-            for (const uplaod of req.uploads ?? []) {
-              UploadService.deleteForce(req.t, uplaod.id);
-            }
-          }
-
-          return originalJson.call(this, body);
-        };
-
-        next();
-      } catch (error) {
-        logger.error(error);
-        res.status(500).json({ error: errorToString(error) });
-      }
+      next();
     });
   };
 }

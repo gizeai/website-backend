@@ -3,7 +3,6 @@ import OpenAI from "openai";
 import ImageV0 from "./ImageV0";
 import TagsV0 from "./TagsV0";
 import DescriptionV0 from "./DescriptionV0";
-import { ReadStream } from "fs";
 import StudioV0 from "./StudioV0";
 
 export default class ImgV0 {
@@ -31,7 +30,7 @@ export default class ImgV0 {
 
   async generateVideo() {}
 
-  async studioEdit(prompt: string, fileStream: ReadStream, maskFs: ReadStream) {
+  async studioEdit(prompt: string, fileStream: Blob, maskFs: Blob) {
     return StudioV0.generate(this.openai, prompt, fileStream, maskFs);
   }
 }

@@ -1,13 +1,7 @@
 import OpenAI, { toFile } from "openai";
-import * as fs from "fs";
 
 export default class StudioV0 {
-  static async generate(
-    openai: OpenAI,
-    prompt: string,
-    fileStream: fs.ReadStream,
-    maskStream: fs.ReadStream
-  ) {
+  static async generate(openai: OpenAI, prompt: string, fileStream: Blob, maskStream: Blob) {
     const file = await toFile(fileStream, null, {
       type: "image/png",
     });

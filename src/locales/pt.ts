@@ -66,5 +66,6 @@ export const translation = {
     not_found: "Não existe nenhum post com esse ID",
     attachment_not_found: "O anexo especificado não foi encontrado",
     missing_mask: "Você deve fornecer uma máscara para essa criação.",
+    file_not_found: "O arquivo especificado não existe.",
   },
 } as const;

@@ -1,5 +1,5 @@
+import UploadService from "@/services/UploadService";
 import OpenAI from "openai";
-import * as fs from "fs";
 import { ChatCompletionContentPartImage } from "openai/resources/chat";
 import path from "path";
 
@@ -11,7 +11,13 @@ export default class DescriptionV0 {
     const imagesOpenAI: ChatCompletionContentPartImage[] = [];
 
     for await (const image of images) {
-      const buffer = fs.readFileSync(image);
+      const blob = (await UploadService.download(image, "external-uploads")).data;
+
+      if (!blob) {
+        throw new Error("Image not found");
+      }
+
+      const buffer = Buffer.from(await blob.arrayBuffer());
       const ext = path.extname(image).slice(1);
       const mimeType = `image/${ext}`;
       const base64 = buffer.toString("base64");

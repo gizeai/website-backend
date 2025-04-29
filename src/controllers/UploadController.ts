@@ -11,14 +11,14 @@ const UploadController = {
       const id = req.params.id;
       const download = req.query.download;
 
-      const result = await UploadService.get(req.t, id);
+      const result = await UploadService.get(req.t, id, "external-uploads");
 
       if (!result.success) {
         res.status(result.status).json(result.data);
         return;
       }
 
-      const file = result.data.file as Buffer<ArrayBufferLike>;
+      const file = result.data.file as Blob;
       const fileName = result.data.fileName as string;
       const mimeType = result.data.mimeType as string;
       const size = result.data.size as number;
@@ -43,7 +43,7 @@ const UploadController = {
     try {
       const id = req.params.id;
 
-      const result = await UploadService.delete(req.t, req.user as User, id);
+      const result = await UploadService.delete(req.t, req.user as User, id, "external-uploads");
 
       if (!result.success) {
         res.status(result.status).json(result.data);
