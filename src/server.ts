@@ -9,8 +9,6 @@ const port = process.env.EXPRESS_PORT || 3000;
 //TODO: Iniciar serviços que marcar as invoices expiradas como "pagamento recusado"
 //TODO: Iniciar um serviço que deleta todos os Posts não completos criados nas ultimas 6 horas, ele também deve deletar os arquivos de uplaod feito, para não ficar nada boiando.
 
-//8guIKitoS8SHDa9Q
-
 app.listen(port, () => {
   console.log(`Server rodando em http://localhost:${port}`);
 

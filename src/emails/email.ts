@@ -36,8 +36,8 @@ if (user && pass) {
 }
 
 const froms = {
-  account: '"Imaginia" <account@imaginia.com>',
-  support: '"Imaginia" <support@imaginia.com>',
+  account: '"Fliki" <account@fliki.com>',
+  support: '"Fliki" <support@fliki.com>',
 };
 
 export default function createMailer(
