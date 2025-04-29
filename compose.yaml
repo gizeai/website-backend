@@ -33,7 +33,7 @@ services:
     restart: unless-stopped
     environment:
       - REDIS_PORT=6379
-      - REDIS_PASSWORD="daiwodjaidjadiojadoijadj"
+      - REDIS_PASSWORD="6oDD)L;Ci16Six>v"
 
 volumes:
   imaginia_development_db:
