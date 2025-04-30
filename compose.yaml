@@ -1,6 +1,6 @@
 services:
   database:
-    container_name: "fliki_development_db"
+    container_name: "gizeai_development_db"
     image: "postgres:latest"
     env_file:
       - ./.env
@@ -10,16 +10,16 @@ services:
       - ./database_data:/var/lib/postgresql/data
   mailhog:
     image: mailhog/mailhog
-    container_name: fliki_mailhog
+    container_name: gizeai_mailhog
     ports:
       - "1025:1025"
       - "8025:8025"
   
   redis:
-    container_name: fliki_development_redis
+    container_name: gizeai_development_redis
     image: redis:latest
     networks:
-      - fliki_development_network
+      - gizeai_development_network
     command: redis-server --appendonly yes
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -27,7 +27,7 @@ services:
       timeout: 5s
       retries: 3
     volumes:
-      - fliki_development_redis:/data
+      - gizeai_development_redis:/data
     ports:
       - "6379:6379"
     restart: unless-stopped
@@ -36,11 +36,11 @@ services:
       - REDIS_PASSWORD="6oDD)L;Ci16Six>v"
 
 volumes:
-  fliki_development_db:
-  fliki_development_redis:
+  gizeai_development_db:
+  gizeai_development_redis:
 
 networks:
-  fliki_development_network:
+  gizeai_development_network:
     driver: bridge
     attachable: true
     ipam:

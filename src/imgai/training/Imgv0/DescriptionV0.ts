@@ -57,7 +57,7 @@ export default class DescriptionV0 {
       response_format: {
         type: "json_schema",
         json_schema: {
-          name: "fliki_description_generate",
+          name: "gizeai_description_generate",
           schema: {
             type: "object",
             required: ["description"],
