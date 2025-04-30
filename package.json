@@ -4,7 +4,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "npm run services:up && ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/server.ts",
-    "build": "tsc",
+    "build": "npx prisma generate && tsc",
     "start": "node start.js",
     "services:up": "docker compose up -d",
     "services:down": "docker compose down",
