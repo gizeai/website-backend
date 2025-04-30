@@ -5,7 +5,7 @@ import cron from "node-cron";
 export default function DeleteIncompletePosts() {
   cron.schedule("0 */3 * * *", async () => {
     try {
-      await prisma.post.deleteMany({
+      const deleted = await prisma.post.deleteMany({
         where: {
           responseBody: null,
           responseAttachment: {
@@ -19,6 +19,8 @@ export default function DeleteIncompletePosts() {
           },
         },
       });
+
+      console.info(`[DeleteIncompletePosts] Foram deletados ${deleted.count} posts incompletos.`);
     } catch (error) {
       logger.error(error);
     }

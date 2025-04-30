@@ -5,7 +5,7 @@ import cron from "node-cron";
 export default function InvoicesExpireds() {
   cron.schedule("0 */1 * * *", async () => {
     try {
-      await prisma.invoice.updateMany({
+      const updates = await prisma.invoice.updateMany({
         where: {
           expireAt: {
             lt: new Date(),
@@ -15,6 +15,8 @@ export default function InvoicesExpireds() {
           status: "CANCELED",
         },
       });
+
+      console.info(`[InvoicesExpireds] Foram canceladas ${updates.count} faturas expiradas.`);
     } catch (error) {
       logger.error(error);
     }

@@ -5,7 +5,7 @@ import cron from "node-cron";
 export default function DeleteInvalidEnterprises() {
   cron.schedule("0 */6 * * *", async () => {
     try {
-      await prisma.enterprise.deleteMany({
+      const deleted = await prisma.enterprise.deleteMany({
         where: {
           active: false,
           createdAt: {
@@ -13,6 +13,10 @@ export default function DeleteInvalidEnterprises() {
           },
         },
       });
+
+      console.info(
+        `[DeleteInvalidEnterprises] Foram deletadas ${deleted.count} empresas inválidas.`
+      );
     } catch (error) {
       logger.error(error);
     }
