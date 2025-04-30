@@ -171,6 +171,28 @@ const UploadService = {
     };
   },
 
+  getUploadPrismaFromPath: async (t: Translaction, path: string) => {
+    const upload = await prisma.upload.findFirst({
+      where: {
+        storedLocation: path,
+      },
+    });
+
+    if (!upload) {
+      return {
+        success: false,
+        status: 404,
+        data: { error: t("upload.file_not_found") },
+      };
+    }
+
+    return {
+      success: true,
+      status: 200,
+      data: upload,
+    };
+  },
+
   delete: async (t: Translaction, user: User | undefined, id: string, bucket: buckets) => {
     const upload = await prisma.upload.findUnique({
       where: {

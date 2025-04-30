@@ -229,10 +229,41 @@ export default class MatchingTemplate {
         this.job.data.art_model
       );
 
-      //TODO: Criar um vídeo com a imagem gerada.
-      const video = image;
+      if (!image) {
+        notifyClient(jobID, {
+          status: "failed",
+          data: {
+            message: i18next.t("general_erros.internal_server_error"),
+          },
+        });
+        return;
+      }
 
-      //TODO: Usar o saveInPrismaPost e usar o EnterpriseMetrics
+      const video = await imgmodel.generateVideo(image);
+
+      if (!video) {
+        notifyClient(jobID, {
+          status: "failed",
+          data: {
+            message: i18next.t("general_erros.internal_server_error"),
+          },
+        });
+        return;
+      }
+
+      const uploadUrl = await openAiToMyUploadSystem(video);
+
+      if (!uploadUrl) {
+        notifyClient(jobID, {
+          status: "failed",
+          data: {
+            message: i18next.t("general_erros.internal_server_error"),
+          },
+        });
+        return;
+      }
+
+      await this.saveInPrismaPost(this.postID, 2, [uploadUrl], description, tags, false);
 
       notifyClient(jobID, {
         status: "completed",
