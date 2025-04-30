@@ -11,6 +11,7 @@ const imageQueue = Queue<PostGeneratorOptions>("image-generation", {
     host: process.env.REDIS_HOST || "127.0.0.1",
     port: parseInt(process.env.REDIS_PORT || "6379", 10),
     password: process.env.REDIS_PASSWORD,
+    username: process.env.REDIS_USERNAME,
     tls: process.env.REDIS_TLS === "true" ? {} : undefined,
   },
 });
