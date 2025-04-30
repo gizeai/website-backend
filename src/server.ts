@@ -10,9 +10,9 @@ const port = process.env.EXPRESS_PORT || 3000;
 //TODO: Iniciar um serviço que deleta todos os Posts não completos criados nas ultimas 6 horas, ele também deve deletar os arquivos de uplaod feito, para não ficar nada boiando.
 
 app.listen(port, () => {
-  console.log(`Server rodando em http://localhost:${port}`);
+  console.info(`Server rodando em http://localhost:${port}`);
 
   if (process.env.NODE_ENV !== "production") {
-    console.log("WebEmail rodando em http://localhost:8025");
+    console.info("WebEmail rodando em http://localhost:8025");
   }
 });

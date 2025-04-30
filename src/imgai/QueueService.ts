@@ -43,7 +43,6 @@ export default function QueueService(
   });
 
   if (proccess) {
-    console.log("PROCESSO: ", proccess);
     imageQueue.process(ProccessManagerService.MAX_QUEUE_PROCCESSING, async job => {
       const jobID = job.id.toString();
       const interval = setInterval(() => notifyClient(jobID, { status: "ping" }), 10000);

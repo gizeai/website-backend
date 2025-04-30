@@ -11,8 +11,6 @@ export default class ImageV0 {
   ) {
     const files: FileLike[] = [];
 
-    console.log("Instruções: ", JSON.stringify(instructions));
-
     for await (const instruction of instructions) {
       if (instruction.filePath && (instruction.filePath?.length ?? 0) > 0) {
         const blob = await UploadService.download(instruction.filePath, "external-uploads");

@@ -14,11 +14,5 @@ export default async function reduceImageQuality(buffer: Buffer, mb = 1) {
     currentQuality -= 10;
   }
 
-  if (imageSize <= maxSize) {
-    console.log(`Imagem reduzida para ${imageSize / 1024} KB.`);
-  } else {
-    console.log("Não foi possível reduzir a imagem para 1MB.");
-  }
-
   return outputBuffer;
 }

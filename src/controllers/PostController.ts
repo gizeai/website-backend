@@ -151,8 +151,6 @@ const PostController = {
 
       const result = await PostService.stream(res, job_id);
 
-      console.log(result);
-
       if (!result.success) {
         res.write(
           `data: ${JSON.stringify({

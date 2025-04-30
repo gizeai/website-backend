@@ -89,7 +89,6 @@ export default class PostGenerator {
   }
 
   async imagine(options: PostGeneratorOptions) {
-    console.log("Imagine: ", JSON.stringify(options));
     const job = await this.queue.add(options);
 
     return {
