@@ -6,7 +6,7 @@ export default class TagsV0 {
 
   static async generate(openai: OpenAI, description: string, type: string) {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-search-preview-2025-03-11",
+      model: "gpt-4o-mini", //TODO: gpt-4o-search-preview-2025-03-11
       messages: [
         {
           role: "system",

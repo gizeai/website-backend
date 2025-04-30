@@ -5,6 +5,7 @@ import errorToString from "@/utils/errorToString";
 import getFilesRequest from "@/utils/getFilesRequest";
 import isPermission from "@/utils/isPermission";
 import logger from "@/utils/logger";
+import reduceImageQuality from "@/utils/reduceImageQuality";
 import { Enterprise, Upload, User } from "@prisma/client";
 import { Request, Response } from "express";
 
@@ -39,7 +40,16 @@ const PostController = {
 
       if (req.files) {
         for await (const file of getFilesRequest(req) ?? []) {
-          const up = await UploadService.upload(req.user as User, file, "external-uploads");
+          const buffer = file.buffer;
+          const reduce = await reduceImageQuality(buffer);
+
+          const up = await UploadService.uploadFromBuffer(
+            req.user as User,
+            reduce,
+            file.originalname,
+            "image/png",
+            "external-uploads"
+          );
 
           if (up) {
             files.push(up);
@@ -225,7 +235,15 @@ const PostController = {
         return;
       }
 
-      const mask_upload = await UploadService.upload(req.user as User, mask, "external-uploads");
+      const mask_upload_buffer = mask.buffer;
+      const reduce = await reduceImageQuality(mask_upload_buffer);
+      const mask_upload = await UploadService.uploadFromBuffer(
+        req.user as User,
+        reduce,
+        mask.originalname,
+        "image/png",
+        "external-uploads"
+      );
 
       if (!mask_upload) {
         res.status(400).json({ error: req.t("post.missing_mask") });

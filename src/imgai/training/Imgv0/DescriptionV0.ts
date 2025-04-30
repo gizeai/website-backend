@@ -10,14 +10,16 @@ export default class DescriptionV0 {
   static async generate(openai: OpenAI, images: string[], description: string, type: string) {
     const imagesOpenAI: ChatCompletionContentPartImage[] = [];
 
+    console.error("Imagens: ", JSON.stringify(images));
+
     for await (const image of images) {
       const blob = (await UploadService.download(image, "external-uploads")).data;
 
-      if (!blob) {
+      if (!blob.file) {
         throw new Error("Image not found");
       }
 
-      const buffer = Buffer.from(await blob.arrayBuffer());
+      const buffer = Buffer.from(await blob.file.arrayBuffer());
       const ext = path.extname(image).slice(1);
       const mimeType = `image/${ext}`;
       const base64 = buffer.toString("base64");
@@ -32,7 +34,7 @@ export default class DescriptionV0 {
     }
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini", //TODO: gpt-4o
       messages: [
         {
           role: "system",

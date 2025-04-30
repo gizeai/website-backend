@@ -19,7 +19,8 @@ const UploadService = {
     const filename = `${Date.now()}_${file.originalname}`;
     const filePath = `uploads/${filename}`;
 
-    const { error } = await supabase.storage.from(bucket).upload(filePath, file.buffer, {
+    const blob = new Blob([file.buffer], { type: file.mimetype });
+    const { error } = await supabase.storage.from(bucket).upload(filePath, blob, {
       contentType: file.mimetype,
     });
 
@@ -56,7 +57,8 @@ const UploadService = {
     }
 
     const filePath = `uploads/${Date.now()}_${filename}`;
-    const { error } = await supabase.storage.from(bucket).upload(filePath, file);
+    const blob = new Blob([file], { type: mimeType });
+    const { error } = await supabase.storage.from(bucket).upload(filePath, blob);
 
     if (error) {
       logger.error(error);
@@ -140,7 +142,10 @@ const UploadService = {
     return {
       success: true,
       status: 200,
-      data: file.data,
+      data: {
+        file: file.data,
+        mimeType: file.data?.type,
+      },
     };
   },
 

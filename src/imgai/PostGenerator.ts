@@ -17,7 +17,7 @@ export interface PostGeneratorOptions {
   type: "image" | "video" | "carrousel";
   carrousel_count?: number;
   art_model: string;
-  instructions: { description: string; filePath: string }[];
+  instructions: { description: string; filePath?: string }[];
 }
 
 export interface NotifyData {
@@ -89,6 +89,7 @@ export default class PostGenerator {
   }
 
   async imagine(options: PostGeneratorOptions) {
+    console.log("Imagine: ", JSON.stringify(options));
     const job = await this.queue.add(options);
 
     return {
@@ -101,10 +102,10 @@ export default class PostGenerator {
     const fileFs = await UploadService.download(file.storedLocation, "external-uploads");
     const maskFs = await UploadService.download(mask.storedLocation, "external-uploads");
 
-    if (!fileFs.data || !maskFs.data) {
+    if (!fileFs.data?.file || !maskFs.data?.file) {
       throw new Error(i18next.t("post.file_not_found"));
     }
 
-    return await model.studioEdit(prompt, fileFs.data, maskFs.data);
+    return await model.studioEdit(prompt, fileFs.data.file, maskFs.data.file);
   }
 }

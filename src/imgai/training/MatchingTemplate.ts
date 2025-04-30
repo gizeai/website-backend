@@ -83,7 +83,10 @@ export default class MatchingTemplate {
     });
 
     const description = await imgmodel.generateDescription(
-      this.job.data.instructions.map(instruction => instruction.filePath),
+      this.job.data.instructions
+        .map(instruction => instruction.filePath)
+        .filter(a => a !== undefined)
+        .filter(a => a.length > 0),
       this.job.data.description,
       this.job.data.type
     );
@@ -140,7 +143,7 @@ export default class MatchingTemplate {
           message: i18next.t("post.prompt_processed"),
           description: description,
           tags: tags,
-          images: [image],
+          images: [uploadUrl],
         },
       });
     } else if (this.job.data.type === "carrousel") {
@@ -210,7 +213,7 @@ export default class MatchingTemplate {
           message: i18next.t("post.prompt_processed"),
           description: description,
           tags: tags,
-          images: images,
+          images: uploadImages,
         },
       });
     } else if (this.job.data.type === "video") {

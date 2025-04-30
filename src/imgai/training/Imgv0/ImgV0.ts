@@ -22,7 +22,7 @@ export default class ImgV0 {
   }
 
   async generateImage(
-    instructions: { description: string; filePath: string }[],
+    instructions: { description: string; filePath?: string }[],
     art_model: string
   ) {
     return ImageV0.generate(this.openai, instructions, art_model);

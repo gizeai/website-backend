@@ -104,16 +104,14 @@ const PostService = {
       },
     });
 
-    const imgs = instructions
-      .map(instruction => {
-        const fileUrl = files?.find(file => file.originalName === instruction.fileName);
+    const imgs = instructions.map(instruction => {
+      const fileUrl = files?.find(file => file.originalName === instruction.fileName);
 
-        return {
-          description: instruction.description,
-          filePath: fileUrl?.storedLocation || "",
-        };
-      })
-      .filter(instruction => instruction.filePath.length > 0);
+      return {
+        description: instruction.description,
+        filePath: fileUrl?.storedLocation || "",
+      };
+    });
 
     const { jobId } = await postGenerator.imagine({
       postId: post.id,
